@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Smart Attendance Dashboard</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #14b8a6; }
+
+        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(20, 184, 166, 0.1); border-color: rgba(20, 184, 166, 0.4); }
+        .stat-card-danger:hover { box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
+
+        .pulse-glow { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation { 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+        
+        @keyframes fadeInRow { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .new-log-row { animation: fadeInRow 0.5s ease forwards; }
+
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-animate { animation: scaleIn 0.2s ease-out forwards; }
+
+        .chat-open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .chat-closed { transform: translateY(20px); opacity: 0; pointer-events: none; }
+        
+        .prose p { margin-bottom: 0.5rem; }
+        .prose strong { color: #2dd4bf; }
+        .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
+        .prose li { margin-bottom: 0.25rem; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans relative overflow-x-hidden">
+
+    <header class="bg-gray-800 border-b border-gray-700 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-graduation-cap text-teal-400 text-3xl"></i>
+                <h1 class="text-2xl font-bold tracking-wider text-teal-400 hidden md:block">EDUTRACK DASHBOARD</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="btn-open-modal" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-teal-500/20 text-sm flex items-center">
+                    <i class="fa-solid fa-users-gear mr-2"></i> Manage Students
+                </button>
+                <div class="hidden md:flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-full border border-gray-700">
+                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full pulse-glow"></span>
+                    <span class="text-xs text-gray-400 font-mono">Real-time Active</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 font-medium uppercase">Total Swipes</p>
+                    <h3 id="stat-total" class="text-3xl font-bold mt-1 text-white">0</h3>
+                </div>
+                <div class="p-3 bg-gray-700/50 rounded-lg text-teal-400"><i class="fa-solid fa-address-card text-2xl"></i></div>
+            </div>
+            <div class="stat-card bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 font-medium uppercase">Check-in</p>
+                    <h3 id="stat-in" class="text-3xl font-bold mt-1 text-green-400">0</h3>
+                </div>
+                <div class="p-3 bg-green-500/10 rounded-lg text-green-400"><i class="fa-solid fa-door-open text-2xl"></i></div>
+            </div>
+            <div class="stat-card bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 font-medium uppercase">Check-out</p>
+                    <h3 id="stat-out" class="text-3xl font-bold mt-1 text-blue-400">0</h3>
+                </div>
+                <div class="p-3 bg-blue-500/10 rounded-lg text-blue-400"><i class="fa-solid fa-door-closed text-2xl"></i></div>
+            </div>
+            <div class="stat-card stat-card-danger bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-md flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400 font-medium uppercase">Violations</p>
+                    <h3 id="stat-apb" class="text-3xl font-bold mt-1 text-red-400">0</h3>
+                </div>
+                <div class="p-3 bg-red-500/10 rounded-lg text-red-400"><i class="fa-solid fa-triangle-exclamation text-2xl"></i></div>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
+            <div class="px-6 py-4 bg-gray-750 border-b border-gray-700 flex flex-col lg:flex-row justify-between items-center gap-4">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-teal-400"></i> Live Attendance Logs
+                </h2>
+                
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+                    <div class="flex items-center space-x-2 bg-gray-900 px-3 py-2 rounded-lg border border-gray-600">
+                        <i class="fa-solid fa-calendar-days text-teal-400 text-sm"></i>
+                        <input id="filter-date" type="date" class="bg-transparent text-white text-xs font-mono focus:outline-none cursor-pointer [color-scheme:dark]">
+                    </div>
+
+                    <button id="btn-export" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-emerald-500/20 text-sm flex items-center">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Export Excel
+                    </button>
+                    <button id="btn-clear-logs" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-red-500/20 text-sm flex items-center">
+                        <i class="fa-solid fa-trash-can mr-2"></i> Clear Logs
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto max-h-[500px]">
+                <table id="attendance-table" class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-gray-800 z-10 shadow-sm">
+                        <tr class="bg-gray-900/80 text-gray-400 text-xs font-semibold uppercase border-b border-gray-700">
+                            <th class="px-6 py-4">Student Name</th>
+                            <th class="px-6 py-4">Student ID</th>
+                            <th class="px-6 py-4">Card ID (UID)</th>
+                            <th class="px-6 py-4">Classroom</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Timestamp</th>
+                            <th class="px-6 py-4">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-table-body" class="divide-y divide-gray-700/50 text-sm">
+                        <tr id="no-data-row">
+                            <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                                <i class="fa-solid fa-spinner animate-spin mr-2"></i> Connecting to Firebase data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="reg-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="modal-animate bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-2xl w-full max-w-lg relative m-4 max-h-[90vh] overflow-y-auto">
+            <button id="btn-close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-teal-400 mb-6 flex items-center">
+                <i class="fa-solid fa-users-gear mr-3"></i> Student Management
+            </h3>
+
+            <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-700 mb-6">
+                <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                    <i class="fa-solid fa-user-plus text-teal-500 mr-2"></i> Register New
+                </h4>
+                <div class="space-y-3">
+                    <div>
+                        <input id="reg-uid" type="text" class="w-full bg-gray-800 border border-gray-600 text-teal-400 font-mono px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Card UID (e.g. 744001DC)">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input id="reg-name" type="text" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Full Name">
+                        <input id="reg-id" type="text" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Student ID">
+                    </div>
+                    <button id="btn-save-student" class="w-full bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded font-bold transition-colors shadow-lg shadow-teal-500/20 text-sm flex items-center justify-center">
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Save to Database
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                    <i class="fa-solid fa-list-check text-teal-500 mr-2"></i> Registered Students
+                </h4>
+                <div class="bg-gray-900 rounded-lg border border-gray-700 max-h-48 overflow-y-auto">
+                    <ul id="student-list-container" class="divide-y divide-gray-700/50 text-sm">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="btn-toggle-chat" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-2xl flex items-center justify-center text-white text-2xl hover:scale-110 transition-transform z-40">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <div id="chat-window" class="chat-closed fixed bottom-24 right-6 w-80 md:w-96 bg-gray-800 rounded-xl border border-gray-700 shadow-2xl z-50 flex flex-col transition-all duration-300 h-[480px]">
+        <div class="p-4 bg-gray-900 rounded-t-xl border-b border-gray-700 flex justify-between items-center">
+            <h3 class="font-bold text-teal-400 flex items-center text-sm">
+                <i class="fa-solid fa-sparkles mr-2 text-teal-300"></i> EduTrack AI Assistant
+            </h3>
+            <button id="btn-close-chat" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 text-xs">
+            <div class="bg-gray-700 text-gray-200 p-3 rounded-lg rounded-tl-none self-start max-w-[85%]">
+                Xin chào! Tôi là Trợ lý AI có quyền truy cập trực tiếp dữ liệu EduTrack. Bạn có thể hỏi tôi về tình hình lớp học, danh sách sinh viên hoặc ai đi muộn hôm nay!
+            </div>
+        </div>
+        <div class="p-3 bg-gray-900 rounded-b-xl border-t border-gray-700 flex gap-2">
+            <input id="chat-input" type="text" class="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-teal-500" placeholder="Hỏi AI về lịch sử quẹt thẻ...">
+            <button id="btn-send-chat" class="bg-teal-600 hover:bg-teal-500 text-white px-3 py-1.5 rounded-lg transition-colors text-xs">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        // ── CẤU HÌNH API KEY CỦA GEMINI AI STUDIO ──
+        const GEMINI_API_KEY = "AIzaSyDisEyBBfo64dcwerLfZfQI9VRx-v3cfxw"; 
+
+        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+        const firebaseConfig = {
+            databaseURL: "https://edutrack-6db11-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        const logsRef = ref(db, 'attendance_logs');
+        const studentsRef = ref(db, 'students');
+
+        let studentDB = {};
+        let currentLogs = null;
+
+        // THIẾT LẬP MẶC ĐỊNH MỤC CHỌN NGÀY LÀ NGÀY HÔM NAY (YYYY-MM-DD)
+        const filterDateInput = document.getElementById('filter-date');
+        filterDateInput.value = new Date().toISOString().slice(0, 10);
+
+        // LẮNG NGHE SỰ KIỆN THAY ĐỔI NGÀY ĐỂ RENDER LẠI BẢNG LẬP TỨC
+        filterDateInput.addEventListener('change', () => {
+            renderTable();
+        });
+
+        // XỬ LÝ MODAL POPUP
+        const modal = document.getElementById('reg-modal');
+        const btnOpen = document.getElementById('btn-open-modal');
+        const btnClose = document.getElementById('btn-close-modal');
+
+        btnOpen.addEventListener('click', () => modal.classList.remove('hidden'));
+        btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.add('hidden'); });
+
+        onValue(studentsRef, (snapshot) => {
+            if(snapshot.exists()) studentDB = snapshot.val();
+            else studentDB = {};
+            renderTable();         
+            renderStudentList();   
+        });
+
+        onValue(logsRef, (snapshot) => {
+            currentLogs = snapshot.exists() ? snapshot.val() : null;
+            renderTable();
+        });
+
+        // THUẬT TOÁN ĐÓNG BĂNG TRÙNG LẶP DỮ LIỆU
+        document.getElementById('btn-save-student').addEventListener('click', () => {
+            const uidInput = document.getElementById('reg-uid').value.trim().toUpperCase();
+            const nameInput = document.getElementById('reg-name').value.trim();
+            const idInput = document.getElementById('reg-id').value.trim();
+
+            if(!uidInput || !nameInput || !idInput) { 
+                alert("Vui lòng điền đầy đủ các trường thông tin!"); 
+                return; 
+            }
+
+            if (studentDB[uidInput]) {
+                alert(`❌ LỖI: Mã thẻ UID [${uidInput}] đã có chủ!\n\nThẻ này đang được sử dụng bởi sinh viên "${studentDB[uidInput].name}". Vui lòng dùng một chiếc thẻ từ trống khác, hoặc xóa bản ghi cũ trước.`);
+                return;
+            }
+
+            let isDuplicateID = false;
+            let isDuplicateName = false;
+            let duplicateHolderName = "";
+            let duplicateHolderCard = "";
+
+            for (const key in studentDB) {
+                if (studentDB[key].id === idInput) {
+                    isDuplicateID = true;
+                    duplicateHolderName = studentDB[key].name;
+                    break;
+                }
+                if (studentDB[key].name.toLowerCase() === nameInput.toLowerCase()) {
+                    isDuplicateName = true;
+                    duplicateHolderCard = key;
+                    break;
+                }
+            }
+
+            if (isDuplicateID) {
+                alert(`❌ LỖI: Mã sinh viên [${idInput}] đã được gán!\n\nMã này đang thuộc về sinh viên "${duplicateHolderName}". Mỗi người chỉ được dùng 1 mã sinh viên duy nhất.`);
+                return;
+            }
+
+            if (isDuplicateName) {
+                alert(`❌ LỖI: Tên sinh viên "${nameInput}" đã tồn tại!\n\nHệ thống phát hiện tên này đã được đăng ký (Mã thẻ: ${duplicateHolderCard}).\nĐể tránh nhầm lẫn trong báo cáo Excel, nếu đây là 2 người trùng tên, vui lòng thêm ký tự để phân biệt (Ví dụ: "${nameInput} - Lớp A").`);
+                return;
+            }
+
+            set(ref(db, 'students/' + uidInput), { name: nameInput, id: idInput })
+            .then(() => {
+                document.getElementById('reg-uid').value = '';
+                document.getElementById('reg-name').value = '';
+                document.getElementById('reg-id').value = '';
+            }).catch((error) => { alert("Lỗi khi kết nối Database: " + error); });
+        });
+
+        function renderStudentList() {
+            const listContainer = document.getElementById('student-list-container');
+            listContainer.innerHTML = '';
+            const uids = Object.keys(studentDB);
+            if(uids.length === 0) {
+                listContainer.innerHTML = '<li class="p-4 text-center text-gray-500 italic">No students registered yet.</li>';
+                return;
+            }
+            uids.forEach(uid => {
+                const student = studentDB[uid];
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-3 hover:bg-gray-800/50 transition-colors';
+                li.innerHTML = `
+                    <div>
+                        <p class="text-white font-medium">${student.name} <span class="text-xs text-gray-400 ml-1 font-mono">(${student.id})</span></p>
+                        <p class="text-teal-400 font-mono text-xs mt-0.5"><i class="fa-solid fa-id-card text-gray-500 mr-1"></i>${uid}</p>
+                    </div>
+                    <button class="btn-delete-student text-gray-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded transition-colors" data-uid="${uid}" title="Delete Student">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                listContainer.appendChild(li);
+            });
+
+            document.querySelectorAll('.btn-delete-student').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const uidToDelete = e.currentTarget.getAttribute('data-uid');
+                    const studentName = studentDB[uidToDelete].name;
+                    if(confirm(`Are you sure you want to delete ${studentName} (Card: ${uidToDelete})?`)) {
+                        remove(ref(db, 'students/' + uidToDelete)).catch((error) => { alert("Error deleting student: " + error); });
+                    }
+                });
+            });
+        }
+
+        document.getElementById('btn-export').addEventListener('click', () => {
+            if (!currentLogs || Object.keys(currentLogs).length === 0) { alert("No data available to export yet!"); return; }
+            const tableElement = document.getElementById('attendance-table');
+            const workbook = XLSX.utils.table_to_book(tableElement, { sheet: "Attendance Sheet" });
+            const chosenDate = filterDateInput.value || "All_Days";
+            XLSX.writeFile(workbook, `EduTrack_Report_${chosenDate}.xlsx`);
+        });
+
+        document.getElementById('btn-clear-logs').addEventListener('click', () => {
+            if (!currentLogs || Object.keys(currentLogs).length === 0) { alert("The log table is already empty!"); return; }
+            const isConfirmed = confirm("⚠️ WARNING: Are you sure you want to CLEAR ALL attendance logs?\n\nThis action CANNOT be undone! Please make sure you have exported the data to Excel first.");
+            if (isConfirmed) {
+                remove(ref(db, 'attendance_logs')).then(() => {
+                    document.getElementById('log-table-body').innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-gray-500">Logs cleared successfully. Waiting for new swipes...</td></tr>`;
+                    updateStats(0, 0, 0, 0);
+                }).catch((error) => { alert("Error clearing logs: " + error); });
+            }
+        });
+
+        // LOGIC CHATBOT GEMINI AI SDK
+        const chatWindow = document.getElementById('chat-window');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        
+        document.getElementById('btn-toggle-chat').addEventListener('click', () => {
+            chatWindow.classList.toggle('chat-open');
+            chatWindow.classList.toggle('chat-closed');
+        });
+        document.getElementById('btn-close-chat').addEventListener('click', () => {
+            chatWindow.classList.add('chat-closed');
+            chatWindow.classList.remove('chat-open');
+        });
+
+        function appendChatMessage(sender, text) {
+            const div = document.createElement('div');
+            div.className = sender === 'user' 
+                ? 'bg-teal-600 text-white p-2.5 rounded-lg rounded-tr-none self-end max-w-[85%]'
+                : 'bg-gray-700 text-gray-200 p-2.5 rounded-lg rounded-tl-none self-start max-w-[85%] prose prose-invert';
+            
+            div.innerHTML = sender === 'user' ? text : marked.parse(text);
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendQueryToGemini(userQuestion) {
+            if(!GEMINI_API_KEY || GEMINI_API_KEY === "AIzaSy...") { alert("Bạn chưa điền API Key của Gemini!"); return; }
+            appendChatMessage('user', userQuestion);
+            chatInput.value = '';
+
+            const loadingId = 'loading-' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'text-gray-400 text-[10px] italic self-start';
+            loadingDiv.innerText = 'AI đang đọc dữ liệu...';
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // BỔ SUNG NGỮ CẢNH NGÀY ĐANG ĐƯỢC CHỌN ĐỂ AI BIẾT ĐƯỜNG TRẢ LỜI ĐÚNG NGÀY
+            const currentSelectedDate = filterDateInput.value || "Tất cả các ngày";
+
+            const baseContextPrompt = `Bạn là Trợ lý AI của Hệ thống điểm danh thông minh EduTrack. Bạn có năng lực đọc JSON.
+            - Người dùng trên Dashboard hiện tại đang lọc xem dữ liệu của ngày: ${currentSelectedDate}
+            - Danh sách SV: ${JSON.stringify(studentDB)}
+            - Toàn bộ nhật ký điểm danh hệ thống nhận được: ${JSON.stringify(currentLogs)}
+            Quy tắc: Đối chiếu ID thẻ ra tên. Quẹt CHECK_IN từ 15:00 trở đi tính là ĐI MUỘN. Hãy ưu tiên phân tích dữ liệu của ngày đang được chọn lọc (${currentSelectedDate}) để trả lời chính xác nhất. Trả lời bằng tiếng Việt ngắn gọn.
+            Câu hỏi: "${userQuestion}"`;
+
+            try {
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const result = await model.generateContent(baseContextPrompt);
+                const response = await result.response;
+                document.getElementById(loadingId).remove(); 
+                appendChatMessage('bot', response.text());
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                appendChatMessage('bot', "Lỗi kết nối API: " + err.message);
+            }
+        }
+
+        document.getElementById('btn-send-chat').addEventListener('click', () => { const val = chatInput.value.trim(); if(val) sendQueryToGemini(val); });
+        chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') { const val = chatInput.value.trim(); if(val) sendQueryToGemini(val); } });
+
+        // ── HÀM KHỚP ĐỊNH DẠNG NGÀY TỪ LOGS SANG HTML INPUT ──
+        function getLogDateString(log) {
+            let thoiGianStr = "";
+            if (log.thoi_gian_check_in) thoiGianStr = log.thoi_gian_check_in;
+            else if (log.thoi_gian_check_out) thoiGianStr = log.thoi_gian_check_out;
+            else if (log.thoi_gian_vi_pham) thoiGianStr = log.thoi_gian_vi_pham;
+            
+            if (thoiGianStr && thoiGianStr.includes(" ")) {
+                // Định dạng log: "HH:MM:SS DD/MM/YYYY" -> Lấy phần ngày [1]
+                const datePart = thoiGianStr.split(" ")[1]; // "DD/MM/YYYY"
+                const parts = datePart.split("/"); // ["DD", "MM", "YYYY"]
+                return `${parts[2]}-${parts[1]}-${parts[0]}`; // Chuyển thành "YYYY-MM-DD" để khớp ô Input
+            } else if (log.timestamp) {
+                return new Date(log.timestamp).toISOString().slice(0, 10);
+            }
+            return null;
+        }
+
+        // HÀM VẼ BẢNG CÓ TÍCH HỢP BỘ LỌC NGÀY & RE-CALCULATE STATS
+        function renderTable() {
+            const tableBody = document.getElementById('log-table-body');
+            tableBody.innerHTML = '';
+
+            if (!currentLogs) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-gray-500">No swipe history available.</td></tr>`;
+                updateStats(0, 0, 0, 0);
+                return;
+            }
+
+            const sortedKeys = Object.keys(currentLogs).reverse();
+            
+            let countIn = 0, countOut = 0, countApb = 0;
+            let totalFilteredSwipes = 0; // Bộ đếm tổng số lượt quẹt thỏa mãn ngày lọc
+
+            // Lấy giá trị ngày hiện tại đang chọn trên input lọc (chuỗi dạng YYYY-MM-DD)
+            const targetDate = filterDateInput.value;
+
+            sortedKeys.forEach(key => {
+                const log = currentLogs[key];
+                
+                // ── BẮT ĐẦU KIỂM TRA BỘ LỌC NGÀY ──
+                const logDate = getLogDateString(log);
+                // Nếu người dùng có chọn ngày cụ thể và ngày của log không trùng khớp -> Ẩn dòng này đi
+                if (targetDate && logDate !== targetDate) {
+                    return; 
+                }
+                // ─────────────────────────────────
+
+                totalFilteredSwipes++; // Tăng tổng lượt quẹt hợp lệ của ngày đó lên
+
+                const maThe = log.ma_the || log.uid || "Unknown";
+                const phongHoc = log.phong_hoc || log.device_id || "---";
+                const trangThai = log.trang_thai || log.event || "---";
+                
+                let studentName = "Unregistered Student";
+                let studentID = "---------";
+                let isRegistered = false;
+
+                if (studentDB[maThe]) {
+                    studentName = studentDB[maThe].name;
+                    studentID = studentDB[maThe].id;
+                    isRegistered = true;
+                }
+
+                let thoiGian = "---";
+                let checkinHour = -1;
+
+                if (log.thoi_gian_check_in) {
+                    thoiGian = log.thoi_gian_check_in;
+                    checkinHour = parseInt(thoiGian.split(':')[0]);
+                } else if (log.thoi_gian_check_out) {
+                    thoiGian = log.thoi_gian_check_out;
+                } else if (log.thoi_gian_vi_pham) {
+                    thoiGian = log.thoi_gian_vi_pham;
+                } else if (log.timestamp) {
+                    let d = new Date(log.timestamp);
+                    thoiGian = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                    checkinHour = d.getHours();
+                }
+
+                let thoiLuong = "---";
+                if (log["thoi_luong_hoc(giay)"] !== undefined && log["thoi_luong_hoc(giay)"] > 0) {
+                    const totalSecs = log["thoi_luong_hoc(giay)"];
+                    thoiLuong = `${Math.floor(totalSecs / 60)}m ${totalSecs % 60}s`;
+                } else if (trangThai === "CHECK_IN") {
+                    thoiLuong = "In Class"; 
+                }
+
+                let badgeClass = "bg-gray-700 text-gray-300";
+                let statusText = trangThai;
+
+                // Bộ đếm Stats chỉ cộng dồn cho những dòng vượt qua bộ lọc ngày thành công
+                if (trangThai === "CHECK_IN") {
+                    countIn++;
+                    if (checkinHour >= 15) {
+                        badgeClass = "bg-amber-500/10 text-amber-500 border border-amber-500/20";
+                        statusText = "LATE IN";
+                    } else {
+                        badgeClass = "bg-green-500/10 text-green-400 border border-green-500/20";
+                        statusText = "CHECK_IN";
+                    }
+                } else if (trangThai === "CHECK_OUT") {
+                    badgeClass = "bg-blue-500/10 text-blue-400 border border-blue-500/20";
+                    countOut++;
+                } else if (trangThai === "APB_VIOLATION" || trangThai === "Violation") {
+                    badgeClass = "bg-red-500/10 text-red-400 border border-red-500/20";
+                    statusText = "APB VIOLATION";
+                    countApb++;
+                }
+
+                const row = `
+                    <tr class="new-log-row hover:bg-gray-700/30 transition-colors">
+                        <td class="px-6 py-3 font-medium ${isRegistered ? 'text-white' : 'text-gray-500 italic'}">${studentName}</td>
+                        <td class="px-6 py-3 font-mono text-gray-400">${studentID}</td>
+                        <td class="px-6 py-3 font-mono font-bold text-teal-400">${maThe}</td>
+                        <td class="px-6 py-3 text-gray-400">${phongHoc}</td>
+                        <td class="px-6 py-3">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-md ${badgeClass}">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 text-gray-400 font-mono text-xs">${thoiGian}</td>
+                        <td class="px-6 py-3">${thoiLuong}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            // Nếu sau lọc không tìm thấy lượt quẹt nào phù hợp với ngày đó
+            if (totalFilteredSwipes === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-gray-500 italic">No attendance records found for this date.</td></tr>`;
+            }
+
+            // Đổ số liệu thống kê đã được lọc theo ngày ra các thẻ ở trên
+            updateStats(totalFilteredSwipes, countIn, countOut, countApb);
+        }
+
+        function updateStats(total, checkIn, checkOut, apb) {
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-in').innerText = checkIn;
+            document.getElementById('stat-out').innerText = checkOut;
+            document.getElementById('stat-apb').innerText = apb;
+        }
+    </script>
+</body>
+</html>

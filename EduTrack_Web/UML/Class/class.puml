@@ -1,0 +1,69 @@
+@startuml
+
+class Student {
+  +studentId: int
+  +fullName: string
+  +email: string
+  +rfidUid: string
+  +status: string
+}
+
+class RFIDCard {
+  +uid: string
+  +issueDate: datetime
+  +cardStatus: string
+}
+
+class AttendanceLog {
+  +logId: int
+  +timestamp: datetime
+  +action: string
+  +deviceId: string
+}
+
+class FSMController {
+  +currentState: string
+  +validateTransition()
+  +checkIn()
+  +checkOut()
+}
+
+class RFIDReader {
+  +scanCard()
+  +sendUID()
+}
+
+class ESP32 {
+  +connectWiFi()
+  +pushData()
+}
+
+class ServerAPI {
+  +receiveLog()
+  +storeLog()
+  +getReport()
+}
+
+class AIAnalyzer {
+  +detectAnomaly()
+  +generateReport()
+}
+
+class Report {
+  +reportId: int
+  +content: text
+  +createdAt: datetime
+}
+
+Student "1" -- "1" RFIDCard
+Student "1" -- "*" AttendanceLog
+
+RFIDReader --> FSMController
+FSMController --> AttendanceLog
+
+ESP32 --> ServerAPI
+
+ServerAPI --> AIAnalyzer
+AIAnalyzer --> Report
+
+@enduml
