@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Teacher Login</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #14b8a6; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex items-center justify-center relative overflow-hidden px-4">
+    <!-- Background Decorative Gradients -->
+    <div class="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] rounded-full bg-teal-500/10 blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none"></div>
+
+    <div class="w-full max-w-md bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl relative z-10 animate-fade-in">
+        <!-- Logo and Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-teal-500/10 text-teal-400 rounded-2xl border border-teal-500/20 mb-4 shadow-lg shadow-teal-500/5">
+                <i class="fa-solid fa-graduation-cap text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold tracking-wider text-white">EDUTRACK</h2>
+            <p class="text-sm text-gray-400 mt-1">Hệ thống điểm danh thông minh cho Giáo viên</p>
+        </div>
+
+        <!-- Error Notification Area -->
+        <div id="error-alert" class="hidden flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm mb-6 animate-fade-in">
+            <i class="fa-solid fa-circle-exclamation mt-0.5 text-base flex-shrink-0"></i>
+            <span id="error-message">Đã xảy ra lỗi. Vui lòng thử lại.</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="space-y-5">
+            <div>
+                <label for="email" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Giáo viên</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <input id="email" type="email" required 
+                        class="w-full bg-gray-900 border border-gray-700 text-white pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-sm transition-all placeholder-gray-600" 
+                        placeholder="teacher@school.edu.vn">
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Mật khẩu</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <input id="password" type="password" required 
+                        class="w-full bg-gray-900 border border-gray-700 text-white pl-10 pr-10 py-3 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-sm transition-all placeholder-gray-600" 
+                        placeholder="••••••••">
+                    <button type="button" id="btn-toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300 transition-colors">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" id="btn-submit" 
+                class="w-full bg-teal-600 hover:bg-teal-500 text-white py-3 px-4 rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20 text-sm flex items-center justify-center gap-2 cursor-pointer mt-2 active:scale-[0.98]">
+                <span>Đăng nhập</span>
+                <i id="btn-spinner" class="fa-solid fa-spinner animate-spin hidden"></i>
+            </button>
+        </form>
+
+        <div class="text-center mt-6">
+            <p class="text-xs text-gray-500">EduTrack Smart Attendance Platform &copy; 2026</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // CẤU HÌNH FIREBASE
+        // Note: Sử dụng khóa API hiện có làm mặc định. Hãy cập nhật đúng khóa API của Firebase nếu cần.
+        // CẤU HÌNH FIREBASE CHUẨN
+const firebaseConfig = {
+  apiKey: "AIzaSyBHkmRBhZ5DwJnFtH5tUv60-rrKVztc_lk",
+  authDomain: "edutrack-6db11.firebaseapp.com",
+  databaseURL: "https://edutrack-6db11-default-rtdb.firebaseio.com",
+  projectId: "edutrack-6db11",
+  storageBucket: "edutrack-6db11.firebasestorage.app",
+  messagingSenderId: "700330226850",
+  appId: "1:700330226850:web:dad03aa095c8a3e0eb93fb",
+  measurementId: "G-NCFWXJSZXV"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Nếu đã đăng nhập thì tự động chuyển hướng sang Dashboard
+                window.location.href = "Dashboard.html";
+            }
+        });
+
+        // ẨN / HIỆN MẬT KHẨU
+        const passwordInput = document.getElementById("password");
+        const btnTogglePassword = document.getElementById("btn-toggle-password");
+        btnTogglePassword.addEventListener("click", () => {
+            const icon = btnTogglePassword.querySelector("i");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+
+        // XỬ LÝ ĐĂNG NHẬP
+        const loginForm = document.getElementById("login-form");
+        const btnSubmit = document.getElementById("btn-submit");
+        const btnSpinner = document.getElementById("btn-spinner");
+        const errorAlert = document.getElementById("error-alert");
+        const errorMessage = document.getElementById("error-message");
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById("email").value.trim();
+            const password = passwordInput.value;
+
+            // Thiết lập trạng thái loading
+            errorAlert.classList.add("hidden");
+            btnSubmit.disabled = true;
+            btnSpinner.classList.remove("hidden");
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Sau khi đăng nhập thành công, sự kiện onAuthStateChanged sẽ kích hoạt chuyển hướng
+            } catch (error) {
+                btnSubmit.disabled = false;
+                btnSpinner.classList.add("hidden");
+                
+                errorAlert.classList.remove("hidden");
+                
+                // Biên dịch một số mã lỗi Firebase phổ biến sang Tiếng Việt
+                switch (error.code) {
+                    case "auth/invalid-email":
+                        errorMessage.innerText = "Định dạng Email không hợp lệ!";
+                        break;
+                    case "auth/user-disabled":
+                        errorMessage.innerText = "Tài khoản này đã bị khóa!";
+                        break;
+                    case "auth/user-not-found":
+                    case "auth/wrong-password":
+                    case "auth/invalid-credential":
+                        errorMessage.innerText = "Email hoặc mật khẩu không chính xác!";
+                        break;
+                    default:
+                        errorMessage.innerText = `Đăng nhập thất bại: ${error.message}`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
