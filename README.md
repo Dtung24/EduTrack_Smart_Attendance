@@ -48,9 +48,9 @@ EduTrack là một giải pháp quản lý điểm danh thông minh toàn diện
 │   ├── Dashboard.html       # Bảng điều khiển và Chatbox AI
 │   ├── css/
 │   └── js/                  # Logic xử lý Firebase & Gemini SDK
-├── EduTrack_AI_Server/      # Lõi xử lý AI (LSTM Anomaly Detection)
-│   ├── model/               # File mô hình đã huấn luyện (.h5)
-│   └── server.py            # Script lắng nghe Firebase và chạy predict
+├── LSTM_model/      # Lõi xử lý AI (LSTM Anomaly Detection)
+│   ├── .env/               # File mô hình đã huấn luyện (.h5)
+│   └── collab_lstm.ipynb           # Script lắng nghe Firebase và chạy predict
 └── README.md                # Tài liệu hướng dẫn dự án
 ```
 ### 7. Hướng Dẫn Cài Đặt (Setup & Installation)
