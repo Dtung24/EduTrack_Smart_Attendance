@@ -36,9 +36,276 @@
         .prose strong { color: #2dd4bf; }
         .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
         .prose li { margin-bottom: 0.25rem; }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #1f2937; /* text-gray-800 */
+        }
+        
+        body.light-mode ::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+        body.light-mode ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+        }
+        body.light-mode ::-webkit-scrollbar-thumb:hover {
+            background: #14b8a6;
+        }
+
+        body.light-mode header {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+        }
+        body.light-mode header h1 {
+            color: #0d9488 !important; /* teal-600 */
+        }
+        
+        body.light-mode .header-status-indicator {
+            background-color: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode .header-status-indicator span:last-child {
+            color: #4b5563 !important;
+        }
+
+        body.light-mode .stat-card {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+        }
+        body.light-mode .stat-card h3 {
+            color: #111827 !important; /* text-gray-900 */
+        }
+        body.light-mode .stat-card p {
+            color: #6b7280 !important; /* text-gray-500 */
+        }
+        body.light-mode .stat-card div.text-teal-400 {
+            background-color: #f0fdfa !important; /* teal-50 */
+            color: #0d9488 !important; /* teal-600 */
+        }
+        
+        body.light-mode .bg-gray-800 {
+            background-color: #ffffff !important;
+        }
+        body.light-mode .border-gray-700 {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode .border-gray-600 {
+            border-color: #d1d5db !important;
+        }
+        body.light-mode .divide-gray-700\/50 > * + * {
+            border-color: #e5e7eb !important;
+        }
+        
+        /* Attendance table in light mode */
+        body.light-mode #attendance-table thead {
+            background-color: #f9fafb !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #attendance-table thead tr {
+            background-color: #f3f4f6 !important;
+            color: #4b5563 !important;
+        }
+        body.light-mode #attendance-table tbody tr {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #attendance-table tbody tr:hover {
+            background-color: #f9fafb !important;
+        }
+        body.light-mode #attendance-table tbody td {
+            color: #1f2937 !important;
+        }
+        body.light-mode #attendance-table tbody td.text-gray-400 {
+            color: #4b5563 !important;
+        }
+        body.light-mode .student-name-btn {
+            color: #1f2937 !important;
+        }
+        body.light-mode .student-name-btn:hover {
+            color: #0d9488 !important;
+        }
+
+        /* Filter date input in light mode */
+        body.light-mode #filter-date {
+            color: #111827 !important;
+            color-scheme: light !important;
+        }
+        body.light-mode .bg-gray-900 {
+            background-color: #f9fafb !important;
+        }
+        
+        /* Modals in light mode */
+        body.light-mode #reg-modal .modal-animate,
+        body.light-mode #student-details-modal .modal-animate,
+        body.light-mode #class-details-modal .modal-animate {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+        body.light-mode #reg-modal h3,
+        body.light-mode #student-details-modal h3,
+        body.light-mode #class-details-modal h3 {
+            color: #0f766e !important; /* teal-700 */
+        }
+        body.light-mode #reg-modal h4,
+        body.light-mode #student-details-modal h4,
+        body.light-mode #class-details-modal h4 {
+            color: #374151 !important; /* text-gray-700 */
+        }
+        body.light-mode #reg-modal input,
+        body.light-mode #reg-modal select,
+        body.light-mode #new-class-name {
+            background-color: #f9fafb !important;
+            border-color: #d1d5db !important;
+            color: #111827 !important;
+        }
+        body.light-mode #reg-modal input:focus,
+        body.light-mode #reg-modal select:focus,
+        body.light-mode #new-class-name:focus {
+            border-color: #0d9488 !important;
+        }
+        body.light-mode #student-list-container,
+        body.light-mode #class-list-container,
+        body.light-mode #class-student-list {
+            background-color: #f9fafb !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #student-list-container li,
+        body.light-mode #class-list-container li,
+        body.light-mode #class-student-list li {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #student-list-container li:hover,
+        body.light-mode #class-list-container li:hover,
+        body.light-mode #class-student-list li:hover {
+            background-color: #f3f4f6 !important;
+        }
+        body.light-mode #student-list-container li p.text-white,
+        body.light-mode #class-list-container li span.text-white,
+        body.light-mode #class-student-list li p.text-white {
+            color: #111827 !important;
+        }
+        body.light-mode .btn-edit-student,
+        body.light-mode .btn-delete-student,
+        body.light-mode .btn-delete-class {
+            color: #6b7280 !important;
+        }
+        body.light-mode .btn-edit-student:hover {
+            color: #0d9488 !important;
+            background-color: #f0fdfa !important;
+        }
+        body.light-mode .btn-delete-student:hover,
+        body.light-mode .btn-delete-class:hover {
+            color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+        body.light-mode .btn-view-class {
+            color: #111827 !important;
+        }
+        body.light-mode .btn-view-class:hover {
+            color: #0d9488 !important;
+        }
+        body.light-mode #reg-photo-input + label {
+            background-color: #f9fafb !important;
+            border-color: #cbd5e1 !important;
+            color: #4b5563 !important;
+        }
+        body.light-mode #reg-photo-input + label:hover {
+            border-color: #0d9488 !important;
+        }
+        
+        /* Details and lightbox modals */
+        body.light-mode #detail-photo-wrapper {
+            background-color: #f0fdfa !important;
+            border-color: #99f6e4 !important;
+        }
+        body.light-mode #detail-student-name,
+        body.light-mode #class-detail-name {
+            color: #111827 !important;
+        }
+        body.light-mode #detail-student-class {
+            color: #0d9488 !important;
+        }
+        body.light-mode #detail-student-id {
+            background-color: #f3f4f6 !important;
+            color: #4b5563 !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #detail-card-uid {
+            background-color: #f0fdfa !important;
+            color: #0d9488 !important;
+            border-color: #ccfbf1 !important;
+        }
+        body.light-mode #student-details-modal .grid > div,
+        body.light-mode #detail-history-list li {
+            background-color: #f9fafb !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #detail-history-list li p.text-white {
+            color: #111827 !important;
+        }
+        body.light-mode #student-details-modal .grid > div p:first-child {
+            color: #6b7280 !important;
+        }
+
+        /* Tab Switcher */
+        body.light-mode #tab-btn-students,
+        body.light-mode #tab-btn-classes {
+            color: #6b7280;
+        }
+        body.light-mode #tab-btn-students.border-teal-500,
+        body.light-mode #tab-btn-classes.border-teal-500 {
+            color: #0d9488 !important;
+            border-color: #0d9488 !important;
+        }
+        body.light-mode #tab-btn-students:hover,
+        body.light-mode #tab-btn-classes:hover {
+            color: #111827 !important;
+        }
+
+        /* Chat window */
+        body.light-mode #chat-window {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #chat-window > div:first-child {
+            background-color: #f9fafb !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #chat-window h3 {
+            color: #0d9488 !important;
+        }
+        body.light-mode #chat-messages > div {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        body.light-mode #chat-messages > div.bg-gray-700 {
+            background-color: #f3f4f6 !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode #chat-window > div:last-child {
+            background-color: #f9fafb !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #chat-input {
+            background-color: #ffffff !important;
+            border-color: #d1d5db !important;
+            color: #111827 !important;
+        }
+        body.light-mode #chat-input:focus {
+            border-color: #0d9488 !important;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans relative overflow-x-hidden">
+    <script>
+        // Apply theme immediately to prevent flashing
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+        }
+    </script>
 
     <!-- Loading screen for authentication check -->
     <div id="auth-loading" class="flex flex-col items-center justify-center min-h-screen">
@@ -55,13 +322,16 @@
                     <h1 class="text-2xl font-bold tracking-wider text-teal-400 hidden md:block">EDUTRACK DASHBOARD</h1>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button id="btn-toggle-theme" class="bg-gray-700 hover:bg-gray-600 text-teal-400 w-10 h-10 rounded-lg transition-colors cursor-pointer flex items-center justify-center shadow-md focus:outline-none" title="Chuyển chế độ sáng/tối">
+                        <i class="fa-solid fa-moon text-lg"></i>
+                    </button>
                     <button id="btn-open-modal" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-teal-500/20 text-sm flex items-center cursor-pointer">
                         <i class="fa-solid fa-users-gear mr-2"></i> Manage Students
                     </button>
                     <button id="btn-logout" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-red-500/20 text-sm flex items-center cursor-pointer">
                         <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
                     </button>
-                    <div class="hidden md:flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-full border border-gray-700">
+                    <div class="header-status-indicator hidden md:flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-full border border-gray-700">
                         <span class="w-2.5 h-2.5 bg-green-500 rounded-full pulse-glow"></span>
                         <span class="text-xs text-gray-400 font-mono">Real-time Active</span>
                     </div>
@@ -156,33 +426,193 @@
                 <i class="fa-solid fa-users-gear mr-3"></i> Student Management
             </h3>
 
-            <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-700 mb-6">
-                <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
-                    <i class="fa-solid fa-user-plus text-teal-500 mr-2"></i> Register New
-                </h4>
-                <div class="space-y-3">
-                    <div>
-                        <input id="reg-uid" type="text" class="w-full bg-gray-800 border border-gray-600 text-teal-400 font-mono px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Card UID (e.g. 744001DC)">
+            <!-- Tab Buttons -->
+            <div class="flex border-b border-gray-700 mb-6">
+                <button id="tab-btn-students" class="flex-1 py-2 text-center text-sm font-semibold border-b-2 border-teal-500 text-teal-400 focus:outline-none cursor-pointer">
+                    Sinh viên
+                </button>
+                <button id="tab-btn-classes" class="flex-1 py-2 text-center text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white focus:outline-none cursor-pointer">
+                    Lớp hành chính
+                </button>
+            </div>
+
+            <!-- Tab Content: Students -->
+            <div id="tab-content-students" class="space-y-6">
+                <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
+                    <h4 id="form-mode-title" class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-user-plus text-teal-500 mr-2"></i> Register New
+                    </h4>
+                    <div class="space-y-3">
+                        <div>
+                            <input id="reg-uid" type="text" class="w-full bg-gray-800 border border-gray-600 text-teal-400 font-mono px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Card UID (e.g. 744001DC)">
+                        </div>
+                        <div>
+                            <input id="reg-name" type="text" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Full Name">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input id="reg-id" type="text" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Student ID">
+                            <select id="reg-class" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm cursor-pointer">
+                                <option value="">-- Chọn lớp học --</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <label class="flex-1 flex items-center justify-center bg-gray-800 border border-gray-600 border-dashed rounded px-3 py-2 cursor-pointer hover:border-teal-500 hover:bg-gray-750/30 transition-all text-xs text-gray-400">
+                                <i class="fa-solid fa-camera mr-2 text-teal-400"></i>
+                                <span id="upload-status-text">Chọn ảnh thẻ sinh viên</span>
+                                <input id="reg-photo-input" type="file" accept="image/*" class="hidden">
+                            </label>
+                            <div id="reg-photo-preview-container" class="hidden w-10 h-10 bg-gray-900 rounded border border-gray-700 overflow-hidden flex items-center justify-center relative flex-shrink-0">
+                                <img id="reg-photo-preview" src="" class="w-full h-full object-cover">
+                                <button type="button" id="btn-remove-photo" class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] cursor-pointer">
+                                    <i class="fa-solid fa-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="btn-save-student" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded font-bold transition-colors shadow-lg shadow-teal-500/20 text-sm flex items-center justify-center cursor-pointer">
+                                <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Save to Database
+                            </button>
+                            <button id="btn-cancel-edit" type="button" class="hidden bg-gray-700 hover:bg-gray-605 text-white px-4 py-2 rounded font-bold transition-colors text-sm flex items-center justify-center cursor-pointer">
+                                Hủy
+                            </button>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input id="reg-name" type="text" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Full Name">
-                        <input id="reg-id" type="text" class="w-full bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Student ID">
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-list-check text-teal-500 mr-2"></i> Registered Students
+                    </h4>
+                    <div class="bg-gray-900 rounded-lg border border-gray-700 max-h-48 overflow-y-auto">
+                        <ul id="student-list-container" class="divide-y divide-gray-700/50 text-sm">
+                        </ul>
                     </div>
-                    <button id="btn-save-student" class="w-full bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded font-bold transition-colors shadow-lg shadow-teal-500/20 text-sm flex items-center justify-center">
-                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Save to Database
-                    </button>
                 </div>
             </div>
 
-            <div>
-                <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
-                    <i class="fa-solid fa-list-check text-teal-500 mr-2"></i> Registered Students
+            <!-- Tab Content: Classes -->
+            <div id="tab-content-classes" class="hidden space-y-6">
+                <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
+                    <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-folder-plus text-teal-500 mr-2"></i> Thêm lớp học mới
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex gap-2">
+                            <input id="new-class-name" type="text" class="flex-1 bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm" placeholder="Tên lớp (ví dụ: CNTT-01)">
+                            <button id="btn-save-class" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded font-bold transition-colors shadow-lg shadow-teal-500/20 text-sm flex items-center justify-center cursor-pointer">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-list text-teal-500 mr-2"></i> Danh sách lớp học
+                    </h4>
+                    <div class="bg-gray-900 rounded-lg border border-gray-700 max-h-48 overflow-y-auto">
+                        <ul id="class-list-container" class="divide-y divide-gray-700/50 text-sm">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div id="student-details-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="modal-animate bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-2xl w-full max-w-sm relative m-4 max-h-[90vh] flex flex-col">
+            <!-- Control buttons -->
+            <button id="btn-close-details-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Profile Info Header -->
+            <div class="flex flex-col items-center border-b border-gray-700/60 pb-4 mb-4">
+                <div id="detail-photo-wrapper" class="w-16 h-16 bg-teal-500/10 rounded-full flex items-center justify-center border border-teal-500/30 shadow-lg shadow-teal-500/5 overflow-hidden transition-transform duration-200">
+                    <img id="detail-student-photo" src="" class="w-full h-full object-cover hidden">
+                    <i id="detail-student-icon" class="fa-solid fa-user-graduate text-teal-400 text-3xl"></i>
+                </div>
+                <h3 id="detail-student-name" class="text-base font-bold text-white mt-2.5 text-center">---</h3>
+                <p id="detail-student-class" class="text-xs text-teal-400 mt-0.5 text-center font-medium">Lớp: ---</p>
+                <div class="flex items-center space-x-2 mt-1.5 justify-center">
+                    <span id="detail-student-id" class="text-xs bg-gray-900 text-gray-400 px-2 py-0.5 rounded font-mono border border-gray-700">---</span>
+                    <span id="detail-card-uid" class="text-xs bg-teal-500/10 text-teal-400 px-2 py-0.5 rounded font-mono border border-teal-500/20">---</span>
+                </div>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <div class="bg-gray-900/60 p-2 rounded-lg border border-gray-700 text-center">
+                    <p class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Điểm danh</p>
+                    <p id="detail-total-attendance" class="text-base font-bold text-teal-400 mt-1">0</p>
+                </div>
+                <div class="bg-gray-900/60 p-2 rounded-lg border border-gray-700 text-center">
+                    <p class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Đi muộn</p>
+                    <p id="detail-late-count" class="text-base font-bold text-amber-500 mt-1">0</p>
+                </div>
+                <div class="bg-gray-900/60 p-2 rounded-lg border border-gray-700 text-center">
+                    <p class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Vi phạm</p>
+                    <p id="detail-violation-count" class="text-base font-bold text-red-400 mt-1">0</p>
+                </div>
+                <div class="bg-gray-900/60 p-2 rounded-lg border border-gray-700 text-center">
+                    <p class="text-[9px] uppercase tracking-wider text-gray-400 font-bold">Ngày đi/Tuần</p>
+                    <p id="detail-days-per-week" class="text-base font-bold text-green-400 mt-1">0 ngày</p>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="flex-1 flex flex-col min-h-0">
+                <h4 class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-history mr-1.5 text-teal-400"></i> Lịch sử điểm danh
                 </h4>
-                <div class="bg-gray-900 rounded-lg border border-gray-700 max-h-48 overflow-y-auto">
-                    <ul id="student-list-container" class="divide-y divide-gray-700/50 text-sm">
+                <div class="flex-1 overflow-y-auto max-h-52 pr-0.5">
+                    <ul id="detail-history-list" class="space-y-2 text-xs">
+                        <!-- Dynamic history list items -->
                     </ul>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Class Details Modal -->
+    <div id="class-details-modal" class="hidden fixed inset-0 z-[52] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="modal-animate bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-2xl w-full max-w-sm relative m-4 max-h-[80vh] flex flex-col">
+            <!-- Control buttons -->
+            <button id="btn-close-class-details-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Header Info -->
+            <div class="flex flex-col items-center border-b border-gray-700/60 pb-4 mb-4">
+                <div class="w-12 h-12 bg-teal-500/10 rounded-full flex items-center justify-center border border-teal-500/30 text-teal-400 text-2xl shadow-lg">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h3 id="class-detail-name" class="text-base font-bold text-white mt-2.5 text-center">---</h3>
+                <p id="class-detail-count" class="text-xs text-gray-400 mt-1 text-center font-medium">Sĩ số: 0 sinh viên</p>
+            </div>
+
+            <!-- Student List Section -->
+            <div class="flex-1 flex flex-col min-h-0">
+                <h4 class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-address-book text-teal-400"></i> Danh sách sinh viên
+                </h4>
+                <div class="flex-1 overflow-y-auto max-h-60 pr-0.5">
+                    <ul id="class-student-list" class="space-y-2 text-xs">
+                        <!-- Dynamic list of students -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Lightbox Modal -->
+    <div id="photo-lightbox" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/85 backdrop-blur-sm cursor-zoom-out">
+        <div class="relative w-80 h-80 md:w-[400px] md:h-[400px] m-4 rounded-xl overflow-hidden border border-gray-700 shadow-2xl bg-gray-900 flex items-center justify-center">
+            <img id="lightbox-img" src="" class="w-full h-full object-cover">
+            <button id="btn-close-lightbox" class="absolute top-3 right-3 text-white bg-black/50 hover:bg-black/85 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer transition-colors focus:outline-none">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
         </div>
     </div>
 
@@ -224,9 +654,9 @@
         // CẤU HÌNH FIREBASE VỚI API KEY CHO XÁC THỰC
         // CẤU HÌNH FIREBASE CHUẨN
         const firebaseConfig = {
-            apiKey: "",
+            apiKey: "AIzaSyBHkmRBhZ5DwJnFtH5tUv60-rrKVztc_lk",
             authDomain: "edutrack-6db11.firebaseapp.com",
-            databaseURL: "",
+            databaseURL: "https://edutrack-6db11-default-rtdb.firebaseio.com",
             projectId: "edutrack-6db11",
             storageBucket: "edutrack-6db11.firebasestorage.app",
             messagingSenderId: "700330226850",
@@ -240,9 +670,41 @@
         
         const logsRef = ref(db, 'attendance_logs');
         const studentsRef = ref(db, 'students');
+        const classesRef = ref(db, 'classes');
 
         let studentDB = {};
+        let classDB = {};
         let currentLogs = null;
+
+        // Theme Toggle Logic
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        const themeIcon = btnToggleTheme.querySelector('i');
+        
+        // Initialize button appearance based on current theme state
+        if (document.body.classList.contains('light-mode')) {
+            themeIcon.className = 'fa-solid fa-sun text-lg';
+            btnToggleTheme.classList.replace('bg-gray-700', 'bg-gray-200');
+            btnToggleTheme.classList.replace('hover:bg-gray-600', 'hover:bg-gray-300');
+            btnToggleTheme.classList.replace('text-teal-400', 'text-teal-600');
+        }
+
+        btnToggleTheme.addEventListener('click', () => {
+            if (document.body.classList.contains('light-mode')) {
+                document.body.classList.remove('light-mode');
+                themeIcon.className = 'fa-solid fa-moon text-lg';
+                btnToggleTheme.classList.replace('bg-gray-200', 'bg-gray-700');
+                btnToggleTheme.classList.replace('hover:bg-gray-300', 'hover:bg-gray-600');
+                btnToggleTheme.classList.replace('text-teal-600', 'text-teal-400');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.add('light-mode');
+                themeIcon.className = 'fa-solid fa-sun text-lg';
+                btnToggleTheme.classList.replace('bg-gray-700', 'bg-gray-200');
+                btnToggleTheme.classList.replace('hover:bg-gray-600', 'hover:bg-gray-300');
+                btnToggleTheme.classList.replace('text-teal-400', 'text-teal-600');
+                localStorage.setItem('theme', 'light');
+            }
+        });
 
         // KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP (AUTH CHECK)
         onAuthStateChanged(auth, (user) => {
@@ -281,7 +743,11 @@
         const btnOpen = document.getElementById('btn-open-modal');
         const btnClose = document.getElementById('btn-close-modal');
 
-        btnOpen.addEventListener('click', () => modal.classList.remove('hidden'));
+        btnOpen.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            const tabBtnStudents = document.getElementById('tab-btn-students');
+            if (tabBtnStudents) tabBtnStudents.click();
+        });
         btnClose.addEventListener('click', () => modal.classList.add('hidden'));
         modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.add('hidden'); });
 
@@ -292,6 +758,13 @@
                 else studentDB = {};
                 renderTable();         
                 renderStudentList();   
+            });
+
+            onValue(classesRef, (snapshot) => {
+                if(snapshot.exists()) classDB = snapshot.val();
+                else classDB = {};
+                populateClassSelects();
+                renderClassList();
             });
 
             onValue(logsRef, (snapshot) => {
@@ -305,13 +778,15 @@
             const uidInput = document.getElementById('reg-uid').value.trim().toUpperCase();
             const nameInput = document.getElementById('reg-name').value.trim();
             const idInput = document.getElementById('reg-id').value.trim();
+            const classInput = document.getElementById('reg-class').value.trim();
 
             if(!uidInput || !nameInput || !idInput) { 
                 alert("Vui lòng điền đầy đủ các trường thông tin!"); 
                 return; 
             }
 
-            if (studentDB[uidInput]) {
+            // Only check duplicate card ID if we are NOT in edit mode
+            if (!editingUid && studentDB[uidInput]) {
                 alert(`❌ LỖI: Mã thẻ UID [${uidInput}] đã có chủ!\n\nThẻ này đang được sử dụng bởi sinh viên "${studentDB[uidInput].name}". Vui lòng dùng một chiếc thẻ từ trống khác, hoặc xóa bản ghi cũ trước.`);
                 return;
             }
@@ -322,6 +797,11 @@
             let duplicateHolderCard = "";
 
             for (const key in studentDB) {
+                // Skip checking duplicate for the student currently being edited
+                if (editingUid && key === editingUid) {
+                    continue;
+                }
+
                 if (studentDB[key].id === idInput) {
                     isDuplicateID = true;
                     duplicateHolderName = studentDB[key].name;
@@ -344,12 +824,282 @@
                 return;
             }
 
-            set(ref(db, 'students/' + uidInput), { name: nameInput, id: idInput })
+            const studentData = { name: nameInput, id: idInput };
+            if (classInput) {
+                studentData.class = classInput;
+            }
+            if (selectedPhotoBase64) {
+                studentData.photo = selectedPhotoBase64;
+            }
+
+            set(ref(db, 'students/' + uidInput), studentData)
             .then(() => {
-                document.getElementById('reg-uid').value = '';
-                document.getElementById('reg-name').value = '';
-                document.getElementById('reg-id').value = '';
+                resetEditMode();
             }).catch((error) => { alert("Lỗi khi kết nối Database: " + error); });
+        });
+
+        // Edit Mode Functions & State
+        let editingUid = null;
+
+        function startEditStudent(uid) {
+            const student = studentDB[uid];
+            if (!student) return;
+
+            editingUid = uid;
+
+            // Fill inputs
+            const uidInput = document.getElementById('reg-uid');
+            uidInput.value = uid;
+            uidInput.disabled = true; // Lock UID
+            uidInput.classList.add('opacity-50', 'cursor-not-allowed');
+
+            document.getElementById('reg-name').value = student.name;
+            document.getElementById('reg-id').value = student.id;
+
+            const classSelect = document.getElementById('reg-class');
+            if (student.class) {
+                // Check if class option exists, if not, add it dynamically as a temporary option
+                let optionExists = false;
+                for (let i = 0; i < classSelect.options.length; i++) {
+                    if (classSelect.options[i].value === student.class) {
+                        optionExists = true;
+                        break;
+                    }
+                }
+                if (!optionExists) {
+                    const opt = document.createElement('option');
+                    opt.value = student.class;
+                    opt.innerText = `${student.class} (Lớp cũ)`;
+                    classSelect.appendChild(opt);
+                }
+            }
+            classSelect.value = student.class || '';
+
+            // Load photo preview
+            if (student.photo) {
+                selectedPhotoBase64 = student.photo;
+                const photoPreview = document.getElementById('reg-photo-preview');
+                const photoPreviewContainer = document.getElementById('reg-photo-preview-container');
+                const photoStatusText = document.getElementById('upload-status-text');
+
+                photoPreview.src = student.photo;
+                photoPreviewContainer.classList.remove('hidden');
+                photoStatusText.innerText = "Đã chọn ảnh";
+                photoStatusText.classList.add('text-teal-400');
+            } else {
+                resetPhotoSelection();
+            }
+
+            // Change UI text
+            document.getElementById('form-mode-title').innerHTML = `<i class="fa-solid fa-user-pen text-teal-500 mr-2"></i> Chỉnh sửa sinh viên`;
+            document.getElementById('btn-save-student').innerHTML = `<i class="fa-solid fa-check mr-2"></i> Cập nhật thông tin`;
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+            // Scroll modal form to top
+            document.getElementById('reg-modal').querySelector('.modal-animate').scrollTop = 0;
+        }
+
+        function resetEditMode() {
+            editingUid = null;
+
+            // Unlock UID
+            const uidInput = document.getElementById('reg-uid');
+            uidInput.value = '';
+            uidInput.disabled = false;
+            uidInput.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            document.getElementById('reg-name').value = '';
+            document.getElementById('reg-id').value = '';
+            populateClassSelects(); // Rebuild select options to clean up temporary options
+            document.getElementById('reg-class').value = '';
+            resetPhotoSelection();
+
+            // Restore UI text
+            document.getElementById('form-mode-title').innerHTML = `<i class="fa-solid fa-user-plus text-teal-500 mr-2"></i> Register New`;
+            document.getElementById('btn-save-student').innerHTML = `<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Save to Database`;
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+        }
+
+        document.getElementById('btn-cancel-edit').addEventListener('click', () => {
+            resetEditMode();
+        });
+
+        // Photo Upload Handling & Compression
+        let selectedPhotoBase64 = "";
+
+        const photoInput = document.getElementById('reg-photo-input');
+        const photoStatusText = document.getElementById('upload-status-text');
+        const photoPreviewContainer = document.getElementById('reg-photo-preview-container');
+        const photoPreview = document.getElementById('reg-photo-preview');
+        const btnRemovePhoto = document.getElementById('btn-remove-photo');
+
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Compress image using canvas
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 300;
+                    const MAX_HEIGHT = 300;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to base64 jpeg with 0.7 quality
+                    selectedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    // Show preview
+                    photoPreview.src = selectedPhotoBase64;
+                    photoPreviewContainer.classList.remove('hidden');
+                    photoStatusText.innerText = "Đã chọn ảnh";
+                    photoStatusText.classList.add('text-teal-400');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        btnRemovePhoto.addEventListener('click', () => {
+            resetPhotoSelection();
+        });
+
+        function resetPhotoSelection() {
+            selectedPhotoBase64 = "";
+            photoInput.value = "";
+            photoPreview.src = "";
+            photoPreviewContainer.classList.add('hidden');
+            photoStatusText.innerText = "Chọn ảnh thẻ sinh viên";
+            photoStatusText.classList.remove('text-teal-400');
+        }
+
+        // Tab Management inside Student Management Modal
+        const tabBtnStudents = document.getElementById('tab-btn-students');
+        const tabBtnClasses = document.getElementById('tab-btn-classes');
+        const tabContentStudents = document.getElementById('tab-content-students');
+        const tabContentClasses = document.getElementById('tab-content-classes');
+
+        tabBtnStudents.addEventListener('click', () => {
+            tabBtnStudents.classList.add('border-teal-500', 'text-teal-400');
+            tabBtnStudents.classList.remove('border-transparent', 'text-gray-400');
+            
+            tabBtnClasses.classList.add('border-transparent', 'text-gray-400');
+            tabBtnClasses.classList.remove('border-teal-500', 'text-teal-400');
+            
+            tabContentStudents.classList.remove('hidden');
+            tabContentClasses.classList.add('hidden');
+        });
+
+        tabBtnClasses.addEventListener('click', () => {
+            tabBtnClasses.classList.add('border-teal-500', 'text-teal-400');
+            tabBtnClasses.classList.remove('border-transparent', 'text-gray-400');
+            
+            tabBtnStudents.classList.add('border-transparent', 'text-gray-400');
+            tabBtnStudents.classList.remove('border-teal-500', 'text-teal-400');
+            
+            tabContentClasses.classList.remove('hidden');
+            tabContentStudents.classList.add('hidden');
+        });
+
+        // Predefined Class Management Functions
+        function populateClassSelects() {
+            const selectEl = document.getElementById('reg-class');
+            const currentValue = selectEl.value;
+            
+            selectEl.innerHTML = '<option value="">-- Chọn lớp học --</option>';
+            
+            const classNames = Object.keys(classDB).sort();
+            classNames.forEach(className => {
+                const opt = document.createElement('option');
+                opt.value = className;
+                opt.innerText = className;
+                selectEl.appendChild(opt);
+            });
+            
+            if (classNames.includes(currentValue)) {
+                selectEl.value = currentValue;
+            }
+        }
+
+        function renderClassList() {
+            const container = document.getElementById('class-list-container');
+            container.innerHTML = '';
+            
+            const classNames = Object.keys(classDB).sort();
+            if (classNames.length === 0) {
+                container.innerHTML = '<li class="p-4 text-center text-gray-500 italic">Chưa có lớp học nào được tạo.</li>';
+                return;
+            }
+            
+            classNames.forEach(name => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-3 hover:bg-gray-800/50 transition-colors';
+                li.innerHTML = `
+                    <button class="btn-view-class hover:text-teal-400 hover:underline text-left font-medium transition-colors cursor-pointer focus:outline-none text-white" data-class="${name}">${name}</button>
+                    <button class="btn-delete-class text-gray-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded transition-colors" data-class="${name}" title="Xóa lớp học">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(li);
+            });
+
+            document.querySelectorAll('.btn-view-class').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const className = e.currentTarget.getAttribute('data-class');
+                    showClassDetails(className);
+                });
+            });
+
+            document.querySelectorAll('.btn-delete-class').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const classToDelete = e.currentTarget.getAttribute('data-class');
+                    if (confirm(`Bạn có chắc chắn muốn xóa lớp học "${classToDelete}"?\nLưu ý: Các sinh viên thuộc lớp này vẫn giữ nguyên tên lớp.`)) {
+                        remove(ref(db, 'classes/' + classToDelete)).catch((err) => {
+                            alert("Lỗi khi xóa lớp học: " + err.message);
+                        });
+                    }
+                });
+            });
+        }
+
+        document.getElementById('btn-save-class').addEventListener('click', () => {
+            const classNameInput = document.getElementById('new-class-name').value.trim();
+            if (!classNameInput) {
+                alert("Vui lòng nhập tên lớp!");
+                return;
+            }
+            
+            const upperName = classNameInput.toUpperCase();
+            if (classDB[upperName]) {
+                alert(`Lớp học "${upperName}" đã tồn tại!`);
+                return;
+            }
+            
+            set(ref(db, 'classes/' + upperName), true)
+            .then(() => {
+                document.getElementById('new-class-name').value = '';
+            }).catch((err) => {
+                alert("Lỗi khi thêm lớp học: " + err.message);
+            });
         });
 
         function renderStudentList() {
@@ -362,18 +1112,37 @@
             }
             uids.forEach(uid => {
                 const student = studentDB[uid];
+                const avatarHtml = student.photo 
+                    ? `<img src="${student.photo}" class="w-8 h-8 rounded-full object-cover border border-gray-700 shadow">`
+                    : `<div class="w-8 h-8 bg-teal-500/10 rounded-full flex items-center justify-center border border-teal-500/30 text-teal-400 text-xs flex-shrink-0"><i class="fa-solid fa-user"></i></div>`;
+
                 const li = document.createElement('li');
                 li.className = 'flex justify-between items-center p-3 hover:bg-gray-800/50 transition-colors';
                 li.innerHTML = `
-                    <div>
-                        <p class="text-white font-medium">${student.name} <span class="text-xs text-gray-400 ml-1 font-mono">(${student.id})</span></p>
-                        <p class="text-teal-400 font-mono text-xs mt-0.5"><i class="fa-solid fa-id-card text-gray-500 mr-1"></i>${uid}</p>
+                    <div class="flex items-center space-x-3">
+                        ${avatarHtml}
+                        <div>
+                            <p class="text-white font-medium">${student.name} <span class="text-xs text-gray-400 ml-1 font-mono">(${student.id})</span></p>
+                            <p class="text-teal-400 font-mono text-xs mt-0.5"><i class="fa-solid fa-id-card text-gray-500 mr-1"></i>${uid}${student.class ? ` • Lớp: ${student.class}` : ''}</p>
+                        </div>
                     </div>
-                    <button class="btn-delete-student text-gray-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded transition-colors" data-uid="${uid}" title="Delete Student">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button class="btn-edit-student text-gray-500 hover:text-teal-400 hover:bg-teal-500/10 p-2 rounded transition-colors" data-uid="${uid}" title="Sửa thông tin">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </button>
+                        <button class="btn-delete-student text-gray-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded transition-colors" data-uid="${uid}" title="Delete Student">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
                 `;
                 listContainer.appendChild(li);
+            });
+
+            document.querySelectorAll('.btn-edit-student').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const uidToEdit = e.currentTarget.getAttribute('data-uid');
+                    startEditStudent(uidToEdit);
+                });
             });
 
             document.querySelectorAll('.btn-delete-student').forEach(btn => {
@@ -385,6 +1154,301 @@
                     }
                 });
             });
+        }
+
+        // Close Student Details Modal
+        let activePreviousModal = null;
+        const detailsModal = document.getElementById('student-details-modal');
+        const btnCloseDetails = document.getElementById('btn-close-details-modal');
+        
+        const closeStudentDetails = () => {
+            detailsModal.classList.add('hidden');
+            if (activePreviousModal) {
+                document.getElementById(activePreviousModal).classList.remove('hidden');
+                activePreviousModal = null;
+            }
+        };
+
+        btnCloseDetails.addEventListener('click', closeStudentDetails);
+        detailsModal.addEventListener('click', (e) => { if(e.target === detailsModal) closeStudentDetails(); });
+
+        // Lightbox Zoom Photo Event Listeners
+        const photoLightbox = document.getElementById('photo-lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const btnCloseLightbox = document.getElementById('btn-close-lightbox');
+        const detailPhotoWrapper = document.getElementById('detail-photo-wrapper');
+        const detailStudentPhoto = document.getElementById('detail-student-photo');
+
+        detailPhotoWrapper.addEventListener('click', () => {
+            if (detailStudentPhoto.src && detailStudentPhoto.style.display !== 'none') {
+                lightboxImg.src = detailStudentPhoto.src;
+                photoLightbox.classList.remove('hidden');
+            }
+        });
+
+        const closeLightbox = () => {
+            photoLightbox.classList.add('hidden');
+            lightboxImg.src = '';
+        };
+
+        btnCloseLightbox.addEventListener('click', closeLightbox);
+        photoLightbox.addEventListener('click', (e) => {
+            if (e.target === photoLightbox || e.target === lightboxImg) {
+                closeLightbox();
+            }
+        });
+
+        // Event delegation for clicking student name in the table
+        document.getElementById('log-table-body').addEventListener('click', (e) => {
+            const btn = e.target.closest('.student-name-btn');
+            if (btn) {
+                const uid = btn.getAttribute('data-uid');
+                activePreviousModal = null; // Came from main log table
+                showStudentDetails(uid);
+            }
+        });
+
+        // Class Details Modal Control
+        const classDetailsModal = document.getElementById('class-details-modal');
+        const btnCloseClassDetails = document.getElementById('btn-close-class-details-modal');
+        
+        btnCloseClassDetails.addEventListener('click', () => classDetailsModal.classList.add('hidden'));
+        classDetailsModal.addEventListener('click', (e) => { if(e.target === classDetailsModal) classDetailsModal.classList.add('hidden'); });
+
+        function showClassDetails(className) {
+            document.getElementById('class-detail-name').innerText = className;
+            const studentListContainer = document.getElementById('class-student-list');
+            studentListContainer.innerHTML = '';
+
+            const studentsInClass = [];
+            Object.keys(studentDB).forEach(uid => {
+                const student = studentDB[uid];
+                if (student.class === className) {
+                    studentsInClass.push({ uid, ...student });
+                }
+            });
+
+            document.getElementById('class-detail-count').innerText = `Sĩ số: ${studentsInClass.length} sinh viên`;
+
+            if (studentsInClass.length === 0) {
+                studentListContainer.innerHTML = '<li class="p-4 text-center text-gray-500 italic">Không có sinh viên nào trong lớp này.</li>';
+            } else {
+                studentsInClass.forEach(student => {
+                    const avatarHtml = student.photo 
+                        ? `<img src="${student.photo}" class="w-6 h-6 rounded-full object-cover border border-gray-700">`
+                        : `<div class="w-6 h-6 bg-teal-500/10 rounded-full flex items-center justify-center border border-teal-500/30 text-teal-400 text-[10px] flex-shrink-0"><i class="fa-solid fa-user"></i></div>`;
+
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center bg-gray-900/40 p-2 rounded border border-gray-700/50 hover:bg-gray-750/30 transition-colors cursor-pointer class-student-item';
+                    li.setAttribute('data-uid', student.uid);
+                    li.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            ${avatarHtml}
+                            <div>
+                                <p class="text-white font-medium">${student.name}</p>
+                                <p class="text-gray-500 text-[10px]">MSSV: ${student.id}</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded font-mono border border-teal-500/20">${student.uid}</span>
+                    `;
+                    studentListContainer.appendChild(li);
+                });
+
+                // Add click listener to student items inside class details
+                studentListContainer.querySelectorAll('.class-student-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const uid = e.currentTarget.getAttribute('data-uid');
+                        activePreviousModal = 'class-details-modal';
+                        classDetailsModal.classList.add('hidden');
+                        showStudentDetails(uid);
+                    });
+                });
+            }
+
+            classDetailsModal.classList.remove('hidden');
+        }
+
+        // Helper to parse date from log to JS Date object
+        function getLogDateObject(log) {
+            if (log.timestamp) {
+                return new Date(log.timestamp);
+            }
+            let thoiGianStr = "";
+            if (log.thoi_gian_check_in) thoiGianStr = log.thoi_gian_check_in;
+            else if (log.thoi_gian_check_out) thoiGianStr = log.thoi_gian_check_out;
+            else if (log.thoi_gian_vi_pham) thoiGianStr = log.thoi_gian_vi_pham;
+            
+            if (thoiGianStr && thoiGianStr.includes(" ")) {
+                const parts = thoiGianStr.split(" ");
+                if (parts.length >= 2) {
+                    const datePart = parts[1]; // "DD/MM/YYYY"
+                    const dateElements = datePart.split("/"); // ["DD", "MM", "YYYY"]
+                    if (dateElements.length === 3) {
+                        return new Date(
+                            parseInt(dateElements[2]), 
+                            parseInt(dateElements[1]) - 1, 
+                            parseInt(dateElements[0])
+                        );
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Show student details popup
+        function showStudentDetails(uid) {
+            const student = studentDB[uid];
+            if (!student) return;
+
+            const historyList = document.getElementById('detail-history-list');
+
+            document.getElementById('detail-student-name').innerText = student.name;
+            document.getElementById('detail-student-class').innerText = student.class ? `Lớp: ${student.class}` : "Lớp: ---";
+            document.getElementById('detail-student-id').innerText = student.id;
+            document.getElementById('detail-card-uid').innerText = uid;
+
+            const photoEl = document.getElementById('detail-student-photo');
+            const iconEl = document.getElementById('detail-student-icon');
+            const photoWrapper = document.getElementById('detail-photo-wrapper');
+            
+            if (student.photo) {
+                photoEl.src = student.photo;
+                photoEl.style.display = 'block';
+                iconEl.style.display = 'none';
+                photoWrapper.classList.add('cursor-zoom-in', 'hover:scale-105');
+                photoWrapper.style.pointerEvents = 'auto';
+            } else {
+                photoEl.src = "";
+                photoEl.style.display = 'none';
+                iconEl.style.display = 'block';
+                photoWrapper.classList.remove('cursor-zoom-in', 'hover:scale-105');
+                photoWrapper.style.pointerEvents = 'none';
+            }
+
+            let totalAttendance = 0;
+            let lateCount = 0;
+            let violationCount = 0;
+            
+            // Calculate current week boundaries (Monday to Sunday)
+            const now = new Date();
+            const currentDay = now.getDay();
+            const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - distanceToMonday);
+            startOfWeek.setHours(0, 0, 0, 0);
+
+            // Set for unique days of attendance this week
+            const uniqueDaysThisWeek = new Set();
+            
+            historyList.innerHTML = '';
+
+            const studentLogs = [];
+
+            if (currentLogs) {
+                Object.keys(currentLogs).forEach(key => {
+                    const log = currentLogs[key];
+                    const maThe = log.ma_the || log.uid || "Unknown";
+                    if (maThe === uid) {
+                        studentLogs.push(log);
+                    }
+                });
+            }
+
+            // Sort logs by time (newest first)
+            const sortedStudentLogs = studentLogs.slice().reverse();
+
+            studentLogs.forEach(log => {
+                const trangThai = log.trang_thai || log.event || "---";
+                if (trangThai === "CHECK_IN") {
+                    totalAttendance++;
+                    
+                    // Check if late
+                    let checkinHour = -1;
+                    if (log.thoi_gian_check_in) {
+                        checkinHour = parseInt(log.thoi_gian_check_in.split(':')[0]);
+                    } else if (log.timestamp) {
+                        let d = new Date(log.timestamp);
+                        checkinHour = d.getHours();
+                    }
+                    if (checkinHour >= 15) {
+                        lateCount++;
+                    }
+
+                    // Check if within current week
+                    const logDateObj = getLogDateObject(log);
+                    if (logDateObj && logDateObj >= startOfWeek && logDateObj <= now) {
+                        const dateStr = logDateObj.toISOString().slice(0, 10);
+                        uniqueDaysThisWeek.add(dateStr);
+                    }
+                } else if (trangThai === "APB_VIOLATION" || trangThai === "Violation") {
+                    violationCount++;
+                }
+            });
+
+            document.getElementById('detail-total-attendance').innerText = totalAttendance;
+            document.getElementById('detail-late-count').innerText = lateCount;
+            document.getElementById('detail-violation-count').innerText = violationCount;
+            document.getElementById('detail-days-per-week').innerText = `${uniqueDaysThisWeek.size} ngày/tuần`;
+
+            // Populate student log history in list
+            if (sortedStudentLogs.length === 0) {
+                historyList.innerHTML = `<li class="text-center text-gray-500 italic py-4">Chưa có lịch sử quẹt thẻ.</li>`;
+            } else {
+                sortedStudentLogs.forEach(log => {
+                    const trangThai = log.trang_thai || log.event || "---";
+                    const phongHoc = log.phong_hoc || log.device_id || "---";
+                    
+                    let thoiGian = "---";
+                    if (log.thoi_gian_check_in) {
+                        thoiGian = log.thoi_gian_check_in;
+                    } else if (log.thoi_gian_check_out) {
+                        thoiGian = log.thoi_gian_check_out;
+                    } else if (log.thoi_gian_vi_pham) {
+                        thoiGian = log.thoi_gian_vi_pham;
+                    } else if (log.timestamp) {
+                        let d = new Date(log.timestamp);
+                        thoiGian = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                    }
+
+                    let badgeColor = "text-gray-400";
+                    let displayStatus = trangThai;
+                    if (trangThai === "CHECK_IN") {
+                        let checkinHour = -1;
+                        if (log.thoi_gian_check_in) {
+                            checkinHour = parseInt(log.thoi_gian_check_in.split(':')[0]);
+                        } else if (log.timestamp) {
+                            let d = new Date(log.timestamp);
+                            checkinHour = d.getHours();
+                        }
+                        if (checkinHour >= 15) {
+                            badgeColor = "bg-amber-500/10 text-amber-500 border border-amber-500/20";
+                            displayStatus = "LATE IN";
+                        } else {
+                            badgeColor = "bg-green-500/10 text-green-400 border border-green-500/20";
+                        }
+                    } else if (trangThai === "CHECK_OUT") {
+                        badgeColor = "bg-blue-500/10 text-blue-400 border border-blue-500/20";
+                    } else if (trangThai === "APB_VIOLATION" || trangThai === "Violation") {
+                        badgeColor = "bg-red-500/10 text-red-400 border border-red-500/20";
+                        displayStatus = "VIOLATION";
+                    }
+
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center bg-gray-900/40 p-2 rounded border border-gray-700/50 hover:bg-gray-700/20 transition-colors';
+                    li.innerHTML = `
+                        <div>
+                            <p class="text-white font-mono text-[11px]">${thoiGian}</p>
+                            <p class="text-gray-500 text-[10px] mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${phongHoc}</p>
+                        </div>
+                        <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded ${badgeColor}">
+                            ${displayStatus}
+                        </span>
+                    `;
+                    historyList.appendChild(li);
+                });
+            }
+
+            detailsModal.classList.remove('hidden');
         }
 
         document.getElementById('btn-export').addEventListener('click', () => {
@@ -579,14 +1643,18 @@
                     countApb++;
                 }
 
+                const studentNameHtml = isRegistered 
+                    ? `<button class="student-name-btn hover:text-teal-400 hover:underline text-left font-medium transition-colors cursor-pointer focus:outline-none" data-uid="${maThe}">${studentName}</button>`
+                    : `<span class="text-gray-500 italic font-medium">${studentName}</span>`;
+
                 const row = `
                     <tr class="new-log-row hover:bg-gray-700/30 transition-colors">
-                        <td class="px-6 py-3 font-medium ${isRegistered ? 'text-white' : 'text-gray-500 italic'}">${studentName}</td>
+                        <td class="px-6 py-3">${studentNameHtml}</td>
                         <td class="px-6 py-3 font-mono text-gray-400">${studentID}</td>
                         <td class="px-6 py-3 font-mono font-bold text-teal-400">${maThe}</td>
                         <td class="px-6 py-3 text-gray-400">${phongHoc}</td>
                         <td class="px-6 py-3">
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-md ${badgeClass}">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-md whitespace-nowrap ${badgeClass}">
                                 ${statusText}
                             </span>
                         </td>
