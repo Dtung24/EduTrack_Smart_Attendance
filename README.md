@@ -40,6 +40,9 @@ EduTrack là một giải pháp quản lý điểm danh thông minh toàn diện
 ### 6. Cấu trúc File
 
 ```text
+├── Altium_PCB_Design        # Thiết kế phần cứng cho dự án
+│   ├── hw_ESP32_DiemDanhSV.PcbDoc  # File thiết kế mạch in
+│   └── hw_ESP32_DiemDanhSV.SchDoc  # File thiết kế mạch nguyên lý
 ├── EduTrack_Firmware/       # Mã nguồn C++ cho vi điều khiển ESP32
 │   ├── src/
 │   └── platformio.ini
@@ -49,9 +52,11 @@ EduTrack là một giải pháp quản lý điểm danh thông minh toàn diện
 │   ├── css/
 │   └── js/                  # Logic xử lý Firebase & Gemini SDK
 ├── LSTM_model/      # Lõi xử lý AI (LSTM Anomaly Detection)
-│   ├── .env/               # File mô hình đã huấn luyện (.h5)
-│   └── collab_lstm.ipynb           # Script lắng nghe Firebase và chạy predict
+│   ├── .env                 # File môi trường
+│   └── collab_lstm.ipynb    # Mô hình LSTM
+├── Báo cáo dự án            # File Word báo cáo tổng quát dự án
 └── README.md                # Tài liệu hướng dẫn dự án
+
 ```
 ### 7. Hướng Dẫn Cài Đặt (Setup & Installation)
 git clone hoặc tải trực tiếp file về máy
