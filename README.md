@@ -21,7 +21,7 @@ EduTrack là một giải pháp quản lý điểm danh thông minh toàn diện
   * Nhập (Import) danh sách lớp và Xuất (Export) báo cáo chuyên cần trực tiếp ra file Excel (`.xlsx`) phục vụ học vụ.
 
 ### 3. AI Insights & Assistant
-* **Phát hiện dị thường (LSTM):** Server Python chạy mô hình mạng học sâu LSTM liên tục quét dữ liệu chuỗi thời gian để phát hiện tự động các mẫu hành vi đi học bất thường.
+* **Mô hình thị giác máy tính (ComputerVision):** Tích hợp thêm tính năng quét mặt đồng thời với việc quẹt thẻ, giúp xác minh 2 bước chống lại việc gian lận.
 * **Trợ lý ảo thông minh (Gemini 2.5 API):** Tích hợp khung Chatbox ứng dụng kỹ thuật RAG cơ bản, cho phép giảng viên truy vấn dữ liệu lớp học bằng ngôn ngữ tự nhiên (VD: *"Liệt kê các sinh viên vắng quá 3 buổi"*).
 ### 4. Kiến Trúc Hệ Thống (System Architecture)
 ```text
