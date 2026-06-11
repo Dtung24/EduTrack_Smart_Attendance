@@ -28,9 +28,13 @@ const long  gmtOffset_sec = 7 * 3600; // GMT+7 (Việt Nam)
 const int   daylightOffset_sec = 0;
 
 // ══════════════════════════════════════════════════════════
-// ANTI-PASSBACK
+// ANTI-PASSBACK & COOLDOWNS
 // ══════════════════════════════════════════════════════════
-#define ANTI_TIME_MS 3000UL   // 3 giây (3000 ms)
+#define ANTI_TIME_MS 3000UL        // Cooldown chống quẹt đúp vô ý cho từng thẻ
+#define SESSION_TIMEOUT_MS 14400000UL // Hết hạn phiên tự động reset (4 tiếng)
+#define READER_COOLDOWN_MS 3000UL   // Khóa đầu đọc toàn hệ thống để chống quẹt hộ liên tục
+
+unsigned long lastReaderSwipeTime = 0; // Lưu mốc thời gian lần quẹt thẻ cuối cùng
 
 enum CardState { OUTSIDE, INSIDE };
 struct CardRecord {
@@ -73,7 +77,6 @@ String get_current_time_string() {
     return "Khong_xac_dinh";
   }
   char timeStringBuff[50];
-  // Định dạng: Giờ:Phút:Giây Ngày/Tháng/Năm
   strftime(timeStringBuff, sizeof(timeStringBuff), "%H:%M:%S %d/%m/%Y", &timeinfo);
   return String(timeStringBuff);
 }
@@ -83,9 +86,8 @@ String get_current_time_string() {
 // ══════════════════════════════════════════════════════════
 void wifi_connect() {
   WiFiManager wm;
-
   // BỎ COMMENT dòng dưới đây nếu bạn muốn MẠCH QUÊN WIFI ĐÃ LƯU để test cài đặt lại
-   wm.resetSettings();
+  // wm.resetSettings();
 
   Serial.println("[WiFi] Dang ket noi hoac tao mang Setup (EduTrack_Setup)...");
 
@@ -124,7 +126,7 @@ void send_event(const String& uid, const char* event, unsigned long duration_s) 
   // Lấy giờ thực tế
   String thoi_gian_thuc = get_current_time_string();
 
-  JsonDocument doc;
+  DynamicJsonDocument doc(512);
   doc["ma_the"]     = uid;
   doc["trang_thai"] = event; 
   doc["phong_hoc"]  = "A101";
@@ -155,49 +157,44 @@ void send_event(const String& uid, const char* event, unsigned long duration_s) 
 }
 
 // ══════════════════════════════════════════════════════════
-// Xử lý Cổng VÀO / RA
+// XỬ LÝ MÁY TRẠNG THÁI FSM TRÊN ĐẦU ĐỌC ĐƠN (Tối ưu hóa & Auto-Reset)
 // ══════════════════════════════════════════════════════════
-void handle_gate_in(const String& uid) {
-  CardRecord& rec = cardDB[uid];
-  if (rec.state == OUTSIDE) {
-    rec.state       = INSIDE;
-    rec.checkinTime = millis();
-    buzz_checkin();
-    Serial.println("[IN] CHECK-IN OK: " + uid);
-    send_event(uid, "CHECK_IN", 0);
-  } else {
-    buzz_apb();
-    Serial.println("[IN] APB VIOLATION — Vao 2 lan: " + uid);
-    send_event(uid, "APB_VIOLATION", 0);
-  }
-}
-
-void handle_gate_out(const String& uid) {
-  CardRecord& rec = cardDB[uid];
-  if (rec.state == OUTSIDE) {
-    buzz_apb();
-    Serial.println("[OUT] APB VIOLATION — Ra khi chua Vao: " + uid);
-    send_event(uid, "APB_VIOLATION", 0);
-  } else {
-    unsigned long elapsed = millis() - rec.checkinTime;
-    if (elapsed < ANTI_TIME_MS) {
-      unsigned long con_lai = (ANTI_TIME_MS - elapsed) / 1000;
-      buzz_apb();
-      Serial.printf("[APB] VIOLATION: %s | Quet 2 lan! Tu choi diem danh\n", uid.c_str(), con_lai);
-      send_event(uid, "APB_VIOLATION", 0);
-    } else {
-      unsigned long dur_s = elapsed / 1000;
-      rec.state = OUTSIDE;
-      buzz_checkout();
-      Serial.printf("[OUT] CHECK-OUT OK: %s | %lu giay\n", uid.c_str(), dur_s);
-      send_event(uid, "CHECK_OUT", dur_s);
-    }
-  }
-}
-
 void handle_single_reader(const String& uid) {
-  if (cardDB[uid].state == OUTSIDE) handle_gate_in(uid);
-  else handle_gate_out(uid);
+  buzz_checkin(); // Bíp ngắn báo hiệu đã nhận diện thẻ thành công
+  Serial.println("[RFID] Đã quẹt thẻ. Gửi yêu cầu chờ xác thực khuôn mặt lên Firebase...");
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[FIREBASE] Lỗi: Chưa kết nối WiFi");
+    return;
+  }
+
+  WiFiClientSecure client;
+  client.setInsecure();
+
+  HTTPClient http;
+  // Sử dụng PUT để ghi đè dữ liệu thẻ chờ điểm danh hiện tại
+  http.begin(client, "https://edutrack-6db11-default-rtdb.firebaseio.com/pending_swipe.json");
+  http.addHeader("Content-Type", "application/json");
+
+  String thoi_gian_thuc = get_current_time_string();
+
+  DynamicJsonDocument doc(512);
+  doc["uid"] = uid;
+  doc["thoi_gian_quet"] = thoi_gian_thuc;
+  doc["timestamp"] = millis();
+
+  String body; 
+  serializeJson(doc, body);
+  
+  int code = http.PUT(body);
+  
+  if (code > 0) {
+    Serial.printf("[FIREBASE] Đã gửi thông tin thẻ chờ thành công: %s | HTTP %d\n", uid.c_str(), code);
+  } else {
+    Serial.printf("[FIREBASE] Lỗi gửi thẻ chờ: %s (HTTP %d)\n", http.errorToString(code).c_str(), code);
+  }
+  
+  http.end();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -228,6 +225,17 @@ void setup() {
 void loop() {
   if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial()) return;
 
+  unsigned long now = millis();
+  // 3. Khóa toàn đầu đọc trong READER_COOLDOWN_MS giây để chống quẹt hộ liên tục
+  if (now - lastReaderSwipeTime < READER_COOLDOWN_MS) {
+    buzz_apb(); 
+    Serial.println("[WARNING] Đầu đọc đang khóa cooldown! Vui lòng đợi...");
+    mfrc522.PICC_HaltA();
+    mfrc522.PCD_StopCrypto1();
+    return; 
+  }
+
+  lastReaderSwipeTime = now;
   String uid = uidToString(mfrc522.uid.uidByte, mfrc522.uid.size);
   Serial.println("\n[RFID] UID: " + uid);
 

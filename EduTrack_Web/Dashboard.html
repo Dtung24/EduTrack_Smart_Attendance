@@ -7,8 +7,9 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -207,13 +208,42 @@
         body.light-mode .btn-view-class:hover {
             color: #0d9488 !important;
         }
-        body.light-mode #reg-photo-input + label {
+        body.light-mode #reg-photo-input + label,
+        body.light-mode #btn-open-reg-cam {
             background-color: #f9fafb !important;
             border-color: #cbd5e1 !important;
             color: #4b5563 !important;
         }
-        body.light-mode #reg-photo-input + label:hover {
+        body.light-mode #reg-photo-input + label:hover,
+        body.light-mode #btn-open-reg-cam:hover {
             border-color: #0d9488 !important;
+            color: #0d9488 !important;
+        }
+        body.light-mode #reg-cam-container {
+            background-color: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #btn-close-reg-cam {
+            background-color: #e5e7eb !important;
+            color: #374151 !important;
+        }
+        body.light-mode #btn-close-reg-cam:hover {
+            background-color: #d1d5db !important;
+        }
+        body.light-mode #cam-attendance-mode {
+            background-color: #f9fafb !important;
+            border-color: #d1d5db !important;
+            color: #111827 !important;
+        }
+        body.light-mode #face-scan-status-card {
+            background-color: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #face-scan-status-text {
+            color: #4b5563 !important;
+        }
+        body.light-mode #face-scan-result-name {
+            color: #111827 !important;
         }
         
         /* Details and lightbox modals */
@@ -379,47 +409,117 @@
             </div>
         </div>
 
-        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
-            <div class="px-6 py-4 bg-gray-750 border-b border-gray-700 flex flex-col lg:flex-row justify-between items-center gap-4">
-                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-teal-400"></i> Live Attendance Logs
-                </h2>
-                
-                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
-                    <div class="flex items-center space-x-2 bg-gray-900 px-3 py-2 rounded-lg border border-gray-600">
-                        <i class="fa-solid fa-calendar-days text-teal-400 text-sm"></i>
-                        <input id="filter-date" type="date" class="bg-transparent text-white text-xs font-mono focus:outline-none cursor-pointer [color-scheme:dark]">
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Live Attendance Logs (2/3 width) -->
+            <div class="lg:col-span-2 bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden flex flex-col h-[600px]">
+                <div class="px-6 py-4 bg-gray-750 border-b border-gray-700 flex flex-col lg:flex-row justify-between items-center gap-4 flex-shrink-0">
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-teal-400"></i> Live Attendance Logs
+                    </h2>
+                    
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+                        <div class="flex items-center space-x-2 bg-gray-900 px-3 py-2 rounded-lg border border-gray-600">
+                            <i class="fa-solid fa-calendar-days text-teal-400 text-sm"></i>
+                            <input id="filter-date" type="date" class="bg-transparent text-white text-xs font-mono focus:outline-none cursor-pointer [color-scheme:dark]">
+                        </div>
 
-                    <button id="btn-export" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-emerald-500/20 text-sm flex items-center">
-                        <i class="fa-solid fa-file-excel mr-2"></i> Export Excel
-                    </button>
-                    <button id="btn-clear-logs" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-lg shadow-red-500/20 text-sm flex items-center">
-                        <i class="fa-solid fa-trash-can mr-2"></i> Clear Logs
-                    </button>
+                        <button id="btn-export" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-lg shadow-emerald-500/20 text-xs flex items-center">
+                            <i class="fa-solid fa-file-excel mr-1.5"></i> Export
+                        </button>
+                        <button id="btn-clear-logs" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors shadow-lg shadow-red-500/20 text-xs flex items-center">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-auto flex-1 min-h-0">
+                    <table id="attendance-table" class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-gray-800 z-10 shadow-sm">
+                            <tr class="bg-gray-900/80 text-gray-400 text-xs font-semibold uppercase border-b border-gray-700">
+                                <th class="px-6 py-4">Student Name</th>
+                                <th class="px-6 py-4">Student ID</th>
+                                <th class="px-6 py-4">Card ID (UID)</th>
+                                <th class="px-6 py-4">Classroom</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Timestamp</th>
+                                <th class="px-6 py-4">Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-table-body" class="divide-y divide-gray-700/50 text-sm">
+                            <tr id="no-data-row">
+                                <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                                    <i class="fa-solid fa-spinner animate-spin mr-2"></i> Connecting to Firebase data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="overflow-x-auto max-h-[500px]">
-                <table id="attendance-table" class="w-full text-left border-collapse">
-                    <thead class="sticky top-0 bg-gray-800 z-10 shadow-sm">
-                        <tr class="bg-gray-900/80 text-gray-400 text-xs font-semibold uppercase border-b border-gray-700">
-                            <th class="px-6 py-4">Student Name</th>
-                            <th class="px-6 py-4">Student ID</th>
-                            <th class="px-6 py-4">Card ID (UID)</th>
-                            <th class="px-6 py-4">Classroom</th>
-                            <th class="px-6 py-4">Status</th>
-                            <th class="px-6 py-4">Timestamp</th>
-                            <th class="px-6 py-4">Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody id="log-table-body" class="divide-y divide-gray-700/50 text-sm">
-                        <tr id="no-data-row">
-                            <td colspan="7" class="px-6 py-10 text-center text-gray-500">
-                                <i class="fa-solid fa-spinner animate-spin mr-2"></i> Connecting to Firebase data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Camera Attendance Terminal (1/3 width) -->
+            <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden flex flex-col h-[600px]">
+                <div class="px-6 py-4 bg-gray-750 border-b border-gray-700 flex-shrink-0">
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-camera text-teal-400"></i> Face Attendance Terminal
+                    </h2>
+                </div>
+                <div class="p-6 flex flex-col flex-1 min-h-0 justify-between">
+                    <!-- Video view wrapper -->
+                    <div class="relative w-full h-56 bg-black rounded-lg border border-gray-750 overflow-hidden shadow-inner flex items-center justify-center">
+                        <video id="attendance-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
+                        <canvas id="attendance-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
+                        
+                        <!-- Offline overlay -->
+                        <div id="attendance-video-placeholder" class="flex flex-col items-center justify-center text-gray-500 space-y-2">
+                            <i class="fa-solid fa-video-slash text-4xl"></i>
+                            <span class="text-xs">Camera Offline</span>
+                        </div>
+
+                        <!-- Loading models overlay -->
+                        <div id="attendance-video-loading" class="hidden absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-teal-400 space-y-2">
+                            <i class="fa-solid fa-spinner animate-spin text-3xl text-teal-400"></i>
+                            <span class="text-xs font-semibold text-teal-455" id="cam-loading-text">Loading AI Models...</span>
+                        </div>
+                    </div>
+
+                    <!-- Attendance settings & status -->
+                    <div class="mt-4 flex-1 flex flex-col justify-between min-h-0">
+                        <div class="space-y-4">
+                            <!-- Mode selector -->
+                            <div>
+                                <label for="cam-attendance-mode" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Chế độ điểm danh</label>
+                                <select id="cam-attendance-mode" class="w-full bg-gray-900 border border-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:border-teal-500 text-sm cursor-pointer">
+                                    <option value="AUTO">AUTO (Tự động VÀO/RA)</option>
+                                    <option value="IN">FORCE IN (Bắt buộc VÀO)</option>
+                                    <option value="OUT">FORCE OUT (Bắt buộc RA)</option>
+                                </select>
+                            </div>
+
+                            <!-- Live status indicator -->
+                            <div id="face-scan-status-card" class="bg-gray-900/50 border border-gray-750 rounded-lg p-3 flex flex-col justify-center min-h-[90px] transition-all duration-300">
+                                <p class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Status Console</p>
+                                <p id="face-scan-status-text" class="text-xs text-gray-400 mt-1 flex items-center font-medium">
+                                    <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Camera đang tắt. Nhấn nút bên dưới để bắt đầu.
+                                </p>
+                                <div id="face-scan-result-details" class="hidden mt-2 border-t border-gray-800 pt-2 flex items-center space-x-2">
+                                    <div id="face-scan-result-avatar" class="w-8 h-8 rounded-full bg-teal-500/10 border border-teal-500/30 overflow-hidden flex items-center justify-center text-teal-400 text-xs flex-shrink-0">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p id="face-scan-result-name" class="text-xs font-bold text-white truncate">---</p>
+                                        <p id="face-scan-result-log" class="text-[10px] text-teal-400 truncate">---</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons control -->
+                        <div class="mt-4 flex gap-2">
+                            <button id="btn-toggle-attendance-cam" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white px-4 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-500/20 text-sm flex items-center justify-center cursor-pointer">
+                                <i class="fa-solid fa-video mr-2"></i> Bật Camera Điểm Danh
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -462,12 +562,31 @@
                                 <option value="">-- Chọn lớp học --</option>
                             </select>
                         </div>
+                        <!-- Camera registration stream -->
+                        <div id="reg-cam-container" class="hidden flex flex-col items-center space-y-2 bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                            <video id="reg-video" autoplay muted playsinline class="w-full h-40 object-cover bg-black rounded-lg border border-gray-700"></video>
+                            <div class="flex gap-2 w-full">
+                                <button type="button" id="btn-capture-photo" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white px-2 py-1 rounded text-xs font-bold transition-colors">
+                                    <i class="fa-solid fa-camera mr-1"></i> Chụp ảnh
+                                </button>
+                                <button type="button" id="btn-close-reg-cam" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-bold transition-colors">
+                                    Hủy
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="flex items-center space-x-3">
                             <label class="flex-1 flex items-center justify-center bg-gray-800 border border-gray-600 border-dashed rounded px-3 py-2 cursor-pointer hover:border-teal-500 hover:bg-gray-750/30 transition-all text-xs text-gray-400">
-                                <i class="fa-solid fa-camera mr-2 text-teal-400"></i>
-                                <span id="upload-status-text">Chọn ảnh thẻ sinh viên</span>
+                                <i class="fa-solid fa-file-image mr-2 text-teal-400"></i>
+                                <span id="upload-status-text">Chọn ảnh thẻ</span>
                                 <input id="reg-photo-input" type="file" accept="image/*" class="hidden">
                             </label>
+
+                            <button type="button" id="btn-open-reg-cam" class="flex-1 flex items-center justify-center bg-gray-800 border border-gray-600 border-dashed rounded px-3 py-2 cursor-pointer hover:border-teal-500 hover:bg-gray-750/30 transition-all text-xs text-gray-400">
+                                <i class="fa-solid fa-camera mr-2 text-teal-400"></i>
+                                <span id="reg-cam-status-text">Chụp từ Camera</span>
+                            </button>
+
                             <div id="reg-photo-preview-container" class="hidden w-10 h-10 bg-gray-900 rounded border border-gray-700 overflow-hidden flex items-center justify-center relative flex-shrink-0">
                                 <img id="reg-photo-preview" src="" class="w-full h-full object-cover">
                                 <button type="button" id="btn-remove-photo" class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] cursor-pointer">
@@ -649,7 +768,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
@@ -678,10 +797,13 @@
         const logsRef = ref(db, 'attendance_logs');
         const studentsRef = ref(db, 'students');
         const classesRef = ref(db, 'classes');
+        const pendingSwipeRef = ref(db, 'pending_swipe');
 
         let studentDB = {};
         let classDB = {};
         let currentLogs = null;
+        let activePendingSwipe = null;
+        let pendingSwipeTimeout = null;
 
         // Theme Toggle Logic
         const btnToggleTheme = document.getElementById('btn-toggle-theme');
@@ -755,14 +877,27 @@
             const tabBtnStudents = document.getElementById('tab-btn-students');
             if (tabBtnStudents) tabBtnStudents.click();
         });
-        btnClose.addEventListener('click', () => modal.classList.add('hidden'));
-        modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.add('hidden'); });
+        btnClose.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            stopRegCam();
+        });
+        modal.addEventListener('click', (e) => { 
+            if(e.target === modal) {
+                modal.classList.add('hidden');
+                stopRegCam();
+            }
+        });
 
         // CHỈ KHỞI CHẠY LẮNG NGHE DATABASE KHI ĐÃ XÁC THỰC THÀNH CÔNG
         function startDatabaseListeners() {
             onValue(studentsRef, (snapshot) => {
                 if(snapshot.exists()) studentDB = snapshot.val();
                 else studentDB = {};
+                faceDescriptorsDB = {}; // Reset cached descriptors to re-evaluate student photos
+                needsMatcherRebuild = true;
+                if (isAttendanceCamRunning) {
+                    buildFaceMatcher().catch(err => console.error("Error rebuilding matcher:", err));
+                }
                 renderTable();         
                 renderStudentList();   
             });
@@ -777,6 +912,15 @@
             onValue(logsRef, (snapshot) => {
                 currentLogs = snapshot.exists() ? snapshot.val() : null;
                 renderTable();
+            });
+
+            // Lắng nghe sự kiện quẹt thẻ chờ xác thực khuôn mặt
+            onValue(pendingSwipeRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    handlePendingSwipe(snapshot.val());
+                } else {
+                    clearPendingSwipeState();
+                }
             });
         }
 
@@ -1459,11 +1603,161 @@
         }
 
         document.getElementById('btn-export').addEventListener('click', () => {
-            if (!currentLogs || Object.keys(currentLogs).length === 0) { alert("No data available to export yet!"); return; }
-            const tableElement = document.getElementById('attendance-table');
-            const workbook = XLSX.utils.table_to_book(tableElement, { sheet: "Attendance Sheet" });
+            if (!currentLogs || Object.keys(currentLogs).length === 0) { 
+                alert("No data available to export yet!"); 
+                return; 
+            }
+            
+            const tableBody = document.getElementById('log-table-body');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            if (rows.length === 0 || rows[0].id === 'no-data-row' || (rows.length === 1 && rows[0].innerText.includes("No"))) {
+                alert("No filtered attendance records to export!");
+                return;
+            }
+
+            const headers = ["Student Name", "Student ID", "Card ID (UID)", "Classroom", "Status", "Timestamp", "Duration"];
+            
+            // Design Styles
+            const headerStyle = {
+                font: { name: "Segoe UI", size: 11, bold: true, color: { rgb: "FFFFFF" } },
+                fill: { fgColor: { rgb: "0F766E" } }, // Teal-700
+                alignment: { horizontal: "center", vertical: "center" },
+                border: {
+                    top: { style: "thin", color: { rgb: "0F766E" } },
+                    bottom: { style: "medium", color: { rgb: "111827" } },
+                    left: { style: "thin", color: { rgb: "0F766E" } },
+                    right: { style: "thin", color: { rgb: "0F766E" } }
+                }
+            };
+
+            const baseStyle = {
+                font: { name: "Segoe UI", size: 10, color: { rgb: "1F2937" } },
+                alignment: { vertical: "center" },
+                border: {
+                    top: { style: "thin", color: { rgb: "E5E7EB" } },
+                    bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                    left: { style: "thin", color: { rgb: "E5E7EB" } },
+                    right: { style: "thin", color: { rgb: "E5E7EB" } }
+                }
+            };
+
+            const statusStyles = {
+                "CHECK_IN": {
+                    font: { name: "Segoe UI", size: 10, bold: true, color: { rgb: "065F46" } }, // Dark green
+                    fill: { fgColor: { rgb: "D1FAE5" } } // Light green bg
+                },
+                "CHECK_OUT": {
+                    font: { name: "Segoe UI", size: 10, bold: true, color: { rgb: "1E40AF" } }, // Dark blue
+                    fill: { fgColor: { rgb: "DBEAFE" } } // Light blue bg
+                },
+                "APB VIOLATION": {
+                    font: { name: "Segoe UI", size: 10, bold: true, color: { rgb: "991B1B" } }, // Dark red
+                    fill: { fgColor: { rgb: "FEE2E2" } } // Light red bg
+                },
+                "LATE IN": {
+                    font: { name: "Segoe UI", size: 10, bold: true, color: { rgb: "92400E" } }, // Dark amber
+                    fill: { fgColor: { rgb: "FEF3C7" } } // Light amber bg
+                }
+            };
+
+            const wsData = [];
+            
+            // Header Row
+            const headerRowCells = headers.map(header => ({
+                v: header,
+                t: 's',
+                s: headerStyle
+            }));
+            wsData.push(headerRowCells);
+
+            const colWidths = headers.map(h => h.length);
+
+            // Populate rows
+            rows.forEach((row, rowIndex) => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 7) return; 
+                
+                const rowCells = [];
+                const isEven = rowIndex % 2 === 0;
+                const rowBgColor = isEven ? "F9FAFB" : "FFFFFF";
+
+                for (let i = 0; i < 7; i++) {
+                    const text = cells[i].innerText.trim();
+                    
+                    if (text.length > colWidths[i]) {
+                        colWidths[i] = text.length;
+                    }
+
+                    const cellStyle = JSON.parse(JSON.stringify(baseStyle));
+                    cellStyle.fill = { fgColor: { rgb: rowBgColor } };
+
+                    if (i === 0) {
+                        cellStyle.alignment.horizontal = "left";
+                    } else {
+                        cellStyle.alignment.horizontal = "center";
+                    }
+
+                    if (i === 4) {
+                        const statusKey = text.toUpperCase();
+                        let matchedStyle = null;
+                        
+                        if (statusKey.includes("CHECK_IN") || statusKey.includes("IN")) {
+                            if (statusKey.includes("LATE")) {
+                                matchedStyle = statusStyles["LATE IN"];
+                            } else {
+                                matchedStyle = statusStyles["CHECK_IN"];
+                            }
+                        } else if (statusKey.includes("CHECK_OUT") || statusKey.includes("OUT")) {
+                            matchedStyle = statusStyles["CHECK_OUT"];
+                        } else if (statusKey.includes("VIOLATION") || statusKey.includes("APB")) {
+                            matchedStyle = statusStyles["APB VIOLATION"];
+                        }
+
+                        if (matchedStyle) {
+                            cellStyle.font = { ...cellStyle.font, ...matchedStyle.font };
+                            cellStyle.fill = { ...cellStyle.fill, ...matchedStyle.fill };
+                            cellStyle.alignment.horizontal = "center";
+                        }
+                    }
+
+                    if (i === 1 || i === 2) {
+                        cellStyle.font.name = "Consolas";
+                    }
+
+                    rowCells.push({
+                        v: text,
+                        t: 's',
+                        s: cellStyle
+                    });
+                }
+                wsData.push(rowCells);
+            });
+
+            const ws = {};
+            
+            wsData.forEach((row, rIdx) => {
+                row.forEach((cell, cIdx) => {
+                    const cellRef = XLSX.utils.encode_cell({ r: rIdx, c: cIdx });
+                    ws[cellRef] = cell;
+                });
+            });
+
+            const maxRow = wsData.length - 1;
+            const maxCol = headers.length - 1;
+            ws['!ref'] = XLSX.utils.encode_range({
+                s: { r: 0, c: 0 },
+                e: { r: maxRow, c: maxCol }
+            });
+
+            // Auto-scale column widths
+            ws['!cols'] = colWidths.map(w => ({ wch: Math.max(w + 4, 11) }));
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance Sheet");
+
             const chosenDate = filterDateInput.value || "All_Days";
-            XLSX.writeFile(workbook, `EduTrack_Report_${chosenDate}.xlsx`);
+            XLSX.writeFile(wb, `EduTrack_Report_${chosenDate}.xlsx`);
         });
 
         document.getElementById('btn-clear-logs').addEventListener('click', () => {
@@ -1687,6 +1981,620 @@
             document.getElementById('stat-out').innerText = checkOut;
             document.getElementById('stat-apb').innerText = apb;
         }
+
+        // ────────────────────────────────────────────────────────
+        // WEBCAM STUDENT PHOTO REGISTRATION LOGIC
+        // ────────────────────────────────────────────────────────
+        let regStream = null;
+
+        document.getElementById('btn-open-reg-cam').addEventListener('click', async () => {
+            const regCamContainer = document.getElementById('reg-cam-container');
+            const regVideo = document.getElementById('reg-video');
+            const regCamStatusText = document.getElementById('reg-cam-status-text');
+
+            try {
+                regStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 320 } });
+                regVideo.srcObject = regStream;
+                regCamContainer.classList.remove('hidden');
+                regCamStatusText.innerText = "Camera đang chạy";
+                regCamStatusText.classList.add('text-teal-400');
+            } catch (err) {
+                alert("Không thể truy cập camera: " + err.message);
+            }
+        });
+
+        document.getElementById('btn-capture-photo').addEventListener('click', () => {
+            const regVideo = document.getElementById('reg-video');
+            const photoPreview = document.getElementById('reg-photo-preview');
+            const photoPreviewContainer = document.getElementById('reg-photo-preview-container');
+            const photoStatusText = document.getElementById('upload-status-text');
+
+            if (!regStream) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 300;
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            
+            const videoWidth = regVideo.videoWidth || 320;
+            const videoHeight = regVideo.videoHeight || 240;
+            const size = Math.min(videoWidth, videoHeight);
+            const startX = (videoWidth - size) / 2;
+            const startY = (videoHeight - size) / 2;
+            
+            ctx.drawImage(regVideo, startX, startY, size, size, 0, 0, 300, 300);
+            selectedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+            photoPreview.src = selectedPhotoBase64;
+            photoPreviewContainer.classList.remove('hidden');
+            photoStatusText.innerText = "Đã chụp ảnh";
+            photoStatusText.classList.add('text-teal-400');
+
+            stopRegCam();
+        });
+
+        document.getElementById('btn-close-reg-cam').addEventListener('click', stopRegCam);
+
+        function stopRegCam() {
+            if (regStream) {
+                regStream.getTracks().forEach(track => track.stop());
+                regStream = null;
+            }
+            document.getElementById('reg-cam-container').classList.add('hidden');
+            document.getElementById('reg-video').srcObject = null;
+            document.getElementById('reg-cam-status-text').innerText = "Chụp từ Camera";
+            document.getElementById('reg-cam-status-text').classList.remove('text-teal-400');
+        }
+
+        // ────────────────────────────────────────────────────────
+        // WEBCAM CAMERA FACE ATTENDANCE LOGIC
+        // ────────────────────────────────────────────────────────
+        let isAttendanceCamRunning = false;
+        let attendanceStream = null;
+        let faceMatcher = null;
+        let areModelsLoaded = false;
+        let faceDescriptorsDB = {};
+        let lastScannedStudent = null;
+        let lastScannedTime = 0;
+        let scanInterval = null;
+        let needsMatcherRebuild = true;
+        let isSuccessScreenShowing = false; // Flag to lock camera scanning after successful detection
+
+        // Xử lý thẻ đang chờ điểm danh (đã quẹt RFID nhưng chưa quét khuôn mặt)
+        function handlePendingSwipe(data) {
+            isSuccessScreenShowing = false; // Reset lock when a new card is swiped
+            if (pendingSwipeTimeout) {
+                clearTimeout(pendingSwipeTimeout);
+                pendingSwipeTimeout = null;
+            }
+
+            const uid = data.uid;
+            const student = studentDB[uid];
+
+            if (!student) {
+                console.warn(`Thẻ quẹt có UID ${uid} chưa được đăng ký.`);
+                updateSwipeUI("unknown", uid);
+                return;
+            }
+
+            activePendingSwipe = {
+                uid: uid,
+                student: student,
+                timestamp: Date.now()
+            };
+
+            // Cập nhật giao diện thông báo đang chờ quét mặt
+            updateSwipeUI("pending", uid, student);
+
+            // Timeout 15 giây nếu không quét khuôn mặt trùng khớp thì tự động hủy
+            pendingSwipeTimeout = setTimeout(() => {
+                console.log("Hết thời gian chờ xác thực khuôn mặt cho UID: " + uid);
+                set(pendingSwipeRef, null);
+                playBeep("violation");
+            }, 15000);
+        }
+
+        function clearPendingSwipeState() {
+            if (pendingSwipeTimeout) {
+                clearTimeout(pendingSwipeTimeout);
+                pendingSwipeTimeout = null;
+            }
+            activePendingSwipe = null;
+            
+            // Chỉ trả về trạng thái idle nếu không phải vừa điểm danh thành công xong
+            const now = Date.now();
+            if (now - lastScannedTime > 4000) {
+                updateSwipeUI("idle");
+            }
+        }
+
+        function updateSwipeUI(state, uid = "", student = null) {
+            const statusText = document.getElementById('face-scan-status-text');
+            const resultDetails = document.getElementById('face-scan-result-details');
+            const avatar = document.getElementById('face-scan-result-avatar');
+            const nameEl = document.getElementById('face-scan-result-name');
+            const logEl = document.getElementById('face-scan-result-log');
+            const card = document.getElementById('face-scan-status-card');
+
+            if (!statusText || !card) return;
+
+            if (state === "idle") {
+                card.className = "bg-gray-900/50 border border-gray-750 rounded-lg p-3 flex flex-col justify-center min-h-[90px] transition-all duration-300";
+                if (isAttendanceCamRunning) {
+                    statusText.innerHTML = `<span class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></span> Camera sẵn sàng. Vui lòng quẹt thẻ từ...`;
+                } else {
+                    statusText.innerHTML = `<span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Camera đang tắt. Nhấn nút bên dưới để bắt đầu.`;
+                }
+                if (resultDetails) resultDetails.classList.add('hidden');
+            } else if (state === "pending") {
+                card.className = "border border-amber-500 bg-amber-500/10 rounded-lg p-3 flex flex-col justify-center min-h-[90px] transition-all duration-300";
+                statusText.innerHTML = `<span class="w-2 h-2 bg-amber-500 rounded-full mr-2 pulse-glow animate-ping"></span> Đã quẹt thẻ! Chờ quét khuôn mặt của:`;
+                
+                if (nameEl) nameEl.innerText = student.name;
+                if (logEl) logEl.innerText = `Chờ xác thực khuôn mặt (MSSV: ${student.id})`;
+                
+                if (avatar) {
+                    if (student.photo) {
+                        avatar.innerHTML = `<img src="${student.photo}" class="w-full h-full object-cover">`;
+                    } else {
+                        avatar.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                    }
+                }
+                if (resultDetails) resultDetails.classList.remove('hidden');
+            } else if (state === "unknown") {
+                card.className = "border border-red-500 bg-red-500/10 rounded-lg p-3 flex flex-col justify-center min-h-[90px] transition-all duration-300";
+                statusText.innerHTML = `<span class="w-2 h-2 bg-red-500 rounded-full mr-2 pulse-glow"></span> Lỗi: Thẻ chưa được đăng ký!`;
+                
+                if (nameEl) nameEl.innerText = "Thẻ không xác định";
+                if (logEl) logEl.innerText = `UID: ${uid}`;
+                if (avatar) avatar.innerHTML = `<i class="fa-solid fa-question text-red-500 text-sm"></i>`;
+                if (resultDetails) resultDetails.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    if (!activePendingSwipe) {
+                        updateSwipeUI("idle");
+                    }
+                }, 4000);
+            }
+        }
+
+        function playBeep(type = "checkin") {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (type === "checkin") {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === "checkout") {
+                    const osc1 = audioCtx.createOscillator();
+                    const gain1 = audioCtx.createGain();
+                    osc1.connect(gain1);
+                    gain1.connect(audioCtx.destination);
+                    osc1.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                    gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    osc1.start();
+                    osc1.stop(audioCtx.currentTime + 0.08);
+
+                    setTimeout(() => {
+                        const osc2 = audioCtx.createOscillator();
+                        const gain2 = audioCtx.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioCtx.destination);
+                        osc2.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                        gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                        osc2.start();
+                        osc2.stop(audioCtx.currentTime + 0.08);
+                    }, 150);
+                } else if (type === "violation") {
+                    let playCount = 0;
+                    const interval = setInterval(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.06);
+                        playCount++;
+                        if (playCount >= 5) clearInterval(interval);
+                    }, 120);
+                }
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function getVietnamTimeStr() {
+            const d = new Date();
+            const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+            const vnTime = new Date(utc + (3600000 * 7));
+            const hh = String(vnTime.getHours()).padStart(2, '0');
+            const mm = String(vnTime.getMinutes()).padStart(2, '0');
+            const ss = String(vnTime.getSeconds()).padStart(2, '0');
+            const DD = String(vnTime.getDate()).padStart(2, '0');
+            const MM = String(vnTime.getMonth() + 1).padStart(2, '0');
+            const YYYY = vnTime.getFullYear();
+            return `${hh}:${mm}:${ss} ${DD}/${MM}/${YYYY}`;
+        }
+
+        async function loadModels() {
+            if (areModelsLoaded) return;
+            const loadingText = document.getElementById('cam-loading-text');
+            loadingText.innerText = "Đang tải cấu hình AI (TinyFaceDetector)...";
+            const MODEL_URL = './models';
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            loadingText.innerText = "Đang tải cấu hình AI (FaceLandmark)...";
+            await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+            loadingText.innerText = "Đang tải cấu hình AI (FaceRecognition)...";
+            await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+            areModelsLoaded = true;
+        }
+
+        async function buildFaceMatcher() {
+            if (!needsMatcherRebuild && faceMatcher) return;
+
+            const statusText = document.getElementById('face-scan-status-text');
+            const uids = Object.keys(studentDB);
+            const LabeledDescriptors = [];
+            
+            const totalWithPhoto = uids.filter(uid => studentDB[uid].photo).length;
+            let loadedCount = 0;
+
+            for (const uid of uids) {
+                const student = studentDB[uid];
+                if (!student.photo) continue;
+
+                if (!faceDescriptorsDB[uid]) {
+                    if (statusText && isAttendanceCamRunning) {
+                        statusText.innerHTML = `<span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span> Đang học khuôn mặt: ${student.name} (${loadedCount + 1}/${totalWithPhoto})...`;
+                    }
+                    try {
+                        const img = await loadImage(student.photo);
+                        const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.25 }))
+                            .withFaceLandmarks()
+                            .withFaceDescriptor();
+                        if (detection) {
+                            faceDescriptorsDB[uid] = detection.descriptor;
+                            console.log(`[AI] Đã học thành công khuôn mặt của: ${student.name}`);
+                        } else {
+                            console.warn(`[AI] Không tìm thấy khuôn mặt trong ảnh thẻ của: ${student.name}`);
+                        }
+                    } catch (err) {
+                        console.error("Error processing photo for student: " + student.name, err);
+                    }
+                }
+
+                if (faceDescriptorsDB[uid]) {
+                    LabeledDescriptors.push(new faceapi.LabeledFaceDescriptors(uid, [faceDescriptorsDB[uid]]));
+                }
+                loadedCount++;
+            }
+
+            if (LabeledDescriptors.length > 0) {
+                faceMatcher = new faceapi.FaceMatcher(LabeledDescriptors, 0.50); // Thắt chặt khoảng cách khớp (0.50 thay vì 0.55) để tăng độ chính xác
+            } else {
+                faceMatcher = null;
+            }
+            needsMatcherRebuild = false;
+        }
+
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = (err) => reject(err);
+                img.src = src;
+            });
+        }
+
+        function getLogTimestamp(log) {
+            if (log.timestamp) return log.timestamp;
+            const logDate = getLogDateObject(log);
+            return logDate ? logDate.getTime() : 0;
+        }
+
+        async function writeAttendanceLog(uid, student, event) {
+            const timeStr = getVietnamTimeStr();
+            const now = Date.now();
+            
+            const logData = {
+                ma_the: uid,
+                trang_thai: event,
+                phong_hoc: "A101",
+                timestamp: now
+            };
+
+            if (event === "CHECK_IN") {
+                logData.thoi_gian_check_in = timeStr;
+                playBeep("checkin");
+                showFaceScanSuccess(student, "CHECK_IN", "VÀO LỚP thành công!", uid);
+            } else if (event === "CHECK_OUT") {
+                logData.thoi_gian_check_out = timeStr;
+                
+                let checkinTime = 0;
+                if (currentLogs) {
+                    let newestCheckin = null;
+                    Object.keys(currentLogs).forEach(key => {
+                        const log = currentLogs[key];
+                        const maThe = log.ma_the || log.uid;
+                        if (maThe === uid && (log.trang_thai || log.event) === "CHECK_IN") {
+                            if (!newestCheckin || getLogTimestamp(log) > getLogTimestamp(newestCheckin)) {
+                                newestCheckin = log;
+                            }
+                        }
+                    });
+                    if (newestCheckin) {
+                        checkinTime = getLogTimestamp(newestCheckin);
+                    }
+                }
+                
+                const duration_s = checkinTime > 0 ? Math.floor((now - checkinTime) / 1000) : 0;
+                logData["thoi_luong_hoc(giay)"] = duration_s;
+                
+                playBeep("checkout");
+                showFaceScanSuccess(student, "CHECK_OUT", `RA LỚP thành công!`, uid);
+            } else {
+                logData.thoi_gian_vi_pham = timeStr;
+                playBeep("violation");
+                showFaceScanSuccess(student, "APB_VIOLATION", "VI PHẠM chống gian lận (APB)!", uid);
+            }
+
+            try {
+                const newLogRef = push(ref(db, 'attendance_logs'));
+                await set(newLogRef, logData);
+            } catch (err) {
+                console.error("Firebase write error:", err);
+            }
+        }
+
+        async function handleRecognizedFace(uid, student) {
+            const now = Date.now();
+            if (lastScannedStudent === uid && now - lastScannedTime < 10000) {
+                return;
+            }
+            lastScannedStudent = uid;
+            lastScannedTime = now;
+
+            const mode = document.getElementById('cam-attendance-mode').value;
+            let finalEvent = "CHECK_IN";
+
+            if (mode === "AUTO") {
+                let lastState = "OUTSIDE";
+                let lastTime = 0;
+
+                if (currentLogs) {
+                    let newestLog = null;
+                    Object.keys(currentLogs).forEach(key => {
+                        const log = currentLogs[key];
+                        const maThe = log.ma_the || log.uid;
+                        if (maThe === uid) {
+                            if (!newestLog || getLogTimestamp(log) > getLogTimestamp(newestLog)) {
+                                newestLog = log;
+                            }
+                        }
+                    });
+
+                    if (newestLog) {
+                        const state = newestLog.trang_thai || newestLog.event;
+                        if (state === "CHECK_IN") {
+                            lastState = "INSIDE";
+                            lastTime = getLogTimestamp(newestLog);
+                        }
+                    }
+                }
+
+                if (lastState === "INSIDE") {
+                    const elapsed = now - lastTime;
+                    if (elapsed < 3000) {
+                        finalEvent = "APB_VIOLATION";
+                    } else {
+                        finalEvent = "CHECK_OUT";
+                    }
+                } else {
+                    finalEvent = "CHECK_IN";
+                }
+            } else {
+                finalEvent = mode === "IN" ? "CHECK_IN" : "CHECK_OUT";
+            }
+
+            await writeAttendanceLog(uid, student, finalEvent);
+            // Xóa trạng thái thẻ chờ trên Firebase sau khi hoàn tất điểm danh
+            set(pendingSwipeRef, null);
+        }
+
+        function showFaceScanSuccess(student, eventType, message, uid) {
+            const statusText = document.getElementById('face-scan-status-text');
+            const resultDetails = document.getElementById('face-scan-result-details');
+            const avatar = document.getElementById('face-scan-result-avatar');
+            const nameEl = document.getElementById('face-scan-result-name');
+            const logEl = document.getElementById('face-scan-result-log');
+            const card = document.getElementById('face-scan-status-card');
+
+            let colorClass = "border-green-500 bg-green-500/10";
+            let textBullet = '<span class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></span>';
+            if (eventType === "CHECK_OUT") {
+                colorClass = "border-blue-500 bg-blue-500/10";
+                textBullet = '<span class="w-2 h-2 bg-blue-500 rounded-full mr-2 pulse-glow"></span>';
+            } else if (eventType === "APB_VIOLATION") {
+                colorClass = "border-red-500 bg-red-500/10";
+                textBullet = '<span class="w-2 h-2 bg-red-500 rounded-full mr-2 pulse-glow"></span>';
+            }
+
+            card.className = `border rounded-lg p-3 flex flex-col justify-center min-h-[90px] transition-all duration-300 ${colorClass}`;
+            statusText.innerHTML = `${textBullet} Nhận diện: ${message}`;
+            
+            nameEl.innerText = student.name;
+            logEl.innerText = `${eventType} lúc ${new Date().toLocaleTimeString()} (MSSV: ${student.id})`;
+            
+            if (student.photo) {
+                avatar.innerHTML = `<img src="${student.photo}" class="w-full h-full object-cover">`;
+            } else {
+                avatar.innerHTML = `<i class="fa-solid fa-user"></i>`;
+            }
+            
+            resultDetails.classList.remove('hidden');
+
+            isSuccessScreenShowing = true; // Lock scanning to let the user see the success message
+
+            setTimeout(() => {
+                if (isAttendanceCamRunning) {
+                    isSuccessScreenShowing = false; // Release lock
+                    updateSwipeUI("idle");
+                }
+            }, 3000); // Display success info for 3 seconds
+        }
+
+        async function startAttendanceCam() {
+            const video = document.getElementById('attendance-video');
+            const canvas = document.getElementById('attendance-canvas');
+            const placeholder = document.getElementById('attendance-video-placeholder');
+            const loadingOverlay = document.getElementById('attendance-video-loading');
+            const statusText = document.getElementById('face-scan-status-text');
+            const resultDetails = document.getElementById('face-scan-result-details');
+            const toggleBtn = document.getElementById('btn-toggle-attendance-cam');
+
+            placeholder.classList.add('hidden');
+            video.classList.remove('hidden');
+            loadingOverlay.classList.remove('hidden');
+            resultDetails.classList.add('hidden');
+
+            try {
+                statusText.innerHTML = `<span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span> Đang khởi tạo mô hình AI...`;
+                await loadModels();
+
+                statusText.innerHTML = `<span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span> Đang nạp dữ liệu khuôn mặt...`;
+                await buildFaceMatcher();
+
+                attendanceStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                video.srcObject = attendanceStream;
+
+                loadingOverlay.classList.add('hidden');
+                isAttendanceCamRunning = true;
+                updateSwipeUI("idle");
+                toggleBtn.innerHTML = `<i class="fa-solid fa-video-slash mr-2"></i> Tắt Camera Điểm Danh`;
+                toggleBtn.classList.replace('bg-teal-600', 'bg-red-600');
+                toggleBtn.classList.replace('hover:bg-teal-500', 'hover:bg-red-500');
+
+                let isProcessing = false;
+                scanInterval = setInterval(async () => {
+                    if (video.paused || video.ended || !isAttendanceCamRunning || isProcessing || isSuccessScreenShowing) return;
+                    isProcessing = true;
+
+                    try {
+                        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+                        faceapi.matchDimensions(canvas, displaySize);
+
+                        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.4 }))
+                            .withFaceLandmarks()
+                            .withFaceDescriptors();
+
+                        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                        if (resizedDetections.length > 0) {
+                            resizedDetections.forEach(detection => {
+                                let displayName = "Chưa định danh";
+                                let boxColor = "#9ca3af"; // Màu xám mặc định khi chưa quẹt thẻ
+
+                                if (faceMatcher && faceMatcher.labeledDescriptors.length > 0) {
+                                    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+                                    if (bestMatch.label !== 'unknown') {
+                                        const uid = bestMatch.label;
+                                        const student = studentDB[uid];
+                                        if (student) {
+                                            if (activePendingSwipe) {
+                                                if (uid === activePendingSwipe.uid) {
+                                                    displayName = `${student.name} (Khớp thẻ)`;
+                                                    boxColor = "#10b981"; // Màu xanh lá
+                                                    handleRecognizedFace(uid, student);
+                                                } else {
+                                                    displayName = `${student.name} (Không khớp thẻ quẹt)`;
+                                                    boxColor = "#ef4444"; // Màu đỏ
+                                                }
+                                            } else {
+                                                displayName = `${student.name} (Chưa quẹt thẻ)`;
+                                                boxColor = "#9ca3af"; // Màu xám
+                                            }
+                                        }
+                                    } else {
+                                        displayName = activePendingSwipe ? "Không khớp thẻ quẹt" : "Chưa quẹt thẻ";
+                                        boxColor = activePendingSwipe ? "#ef4444" : "#9ca3af";
+                                    }
+                                }
+
+                                const drawBox = new faceapi.draw.DrawBox(detection.detection.box, {
+                                    label: displayName,
+                                    boxColor: boxColor,
+                                    lineWidth: 2
+                                });
+                                drawBox.draw(canvas);
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Frame processing error:", err);
+                    } finally {
+                        isProcessing = false;
+                    }
+                }, 1000); // Check once per second to reduce CPU usage and run smoother
+
+            } catch (err) {
+                console.error("Camera Attendance Error:", err);
+                loadingOverlay.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                video.classList.add('hidden');
+                statusText.innerHTML = `<span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span> Lỗi: Camera bận hoặc lỗi quyền.`;
+                stopAttendanceCam();
+            }
+        }
+
+        function stopAttendanceCam() {
+            const video = document.getElementById('attendance-video');
+            const canvas = document.getElementById('attendance-canvas');
+            const placeholder = document.getElementById('attendance-video-placeholder');
+            const loadingOverlay = document.getElementById('attendance-video-loading');
+            const statusText = document.getElementById('face-scan-status-text');
+            const toggleBtn = document.getElementById('btn-toggle-attendance-cam');
+
+            if (scanInterval) {
+                clearInterval(scanInterval);
+                scanInterval = null;
+            }
+
+            if (attendanceStream) {
+                attendanceStream.getTracks().forEach(track => track.stop());
+                attendanceStream = null;
+            }
+
+            video.srcObject = null;
+            video.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            loadingOverlay.classList.add('hidden');
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            isAttendanceCamRunning = false;
+            isSuccessScreenShowing = false;
+            updateSwipeUI("idle");
+            toggleBtn.innerHTML = `<i class="fa-solid fa-video mr-2"></i> Bật Camera Điểm Danh`;
+            toggleBtn.classList.replace('bg-red-600', 'bg-teal-600');
+            toggleBtn.classList.replace('hover:bg-red-500', 'hover:bg-teal-500');
+        }
+
+        document.getElementById('btn-toggle-attendance-cam').addEventListener('click', () => {
+            if (isAttendanceCamRunning) {
+                stopAttendanceCam();
+            } else {
+                startAttendanceCam();
+            }
+        });
     </script>
 </body>
 </html>
